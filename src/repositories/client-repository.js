@@ -33,6 +33,26 @@ class ClientRepository extends CrudRepository {
         }
     }
 
+    async addPosttoClient(clientId, postId){
+        try{
+            const response = await Client.findByIdAndUpdate(clientId, {$push: {posts: postId}}, {new: true});
+            return response;
+        }
+        catch(error){
+            throw error;
+        }
+    }
+
+    async deletePostfromClient(clientId, postId){
+        try{
+            const response = await Client.findByIdAndUpdate(clientId, {$pull: {posts: postId}}, {new: true});
+            return response;
+        }
+        catch(error){
+            throw error;
+        }
+    }
+
 }
 
 module.exports = ClientRepository;

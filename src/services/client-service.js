@@ -45,7 +45,7 @@ async function signin(data) {
 }
 
 
-async function isAuthenticated(token) {
+async function getClientFromToken(token) {
     try {
         if (!token) {
             return new AppError('Missing jwt token', StatusCodes.BAD_REQUEST);
@@ -60,12 +60,6 @@ async function isAuthenticated(token) {
     catch (error) {
         if (error instanceof AppError) {
             throw error;
-        }
-        if (error.name == 'JsonWebTokenError') {
-            throw new AppError('Token Invalid', StatusCodes.BAD_REQUEST);
-        }
-        if (error.name == 'TokenExpiredError') {
-            throw new AppError('Token Expired', StatusCodes.BAD_REQUEST);
         }
         throw new AppError('Something went wrong', StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -93,10 +87,32 @@ async function updateClient(id, data){
     }
 }
 
+async function addPosttoClient(clientId, postId){
+    try {
+        const client = await clientRepository.addPosttoClient(clientId, postId);
+        return client;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function deletePostfromClient(clientId, postId){
+    try {
+        const client = await clientRepository.deletePostfromClient(clientId, postId);
+        return client;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createClient,
     signin,
-    isAuthenticated,
+    getClientFromToken,
     getClientById,
     updateClient,
+    addPosttoClient,
+    deletePostfromClient,
 }

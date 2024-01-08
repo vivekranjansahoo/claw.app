@@ -56,7 +56,7 @@ async function signin(data) {
 }
 
 
-async function isAuthenticated(token) {
+async function getUserFromToken(token) {
     try {
         if (!token) {
             return new AppError('Missing jwt token', StatusCodes.BAD_REQUEST);
@@ -91,7 +91,7 @@ async function getUserById(id) {
 module.exports = {
     createUser,
     signin,
-    isAuthenticated,
+    getUserFromToken,
     getUserById,
     getUser,
 }

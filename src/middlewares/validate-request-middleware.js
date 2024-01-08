@@ -1,5 +1,4 @@
 const {ErrorResponse} = require('../utils/common');
-const {UserService} = require('../services')
 const AppError = require('../utils/errors/app-error');
 const {StatusCodes} = require('http-status-codes');
 
@@ -61,8 +60,40 @@ async function validateAuthRequest(req, res, next){
     next();
 }
 
+function validatePostRequest(req, res, next){
+    if(!req.body.description || req.body.description === ""){
+        ErrorResponse.message = "Description can't be empty.";
+        ErrorResponse.error = new AppError(["Description is not found in the incoming message"],StatusCodes.BAD_REQUEST);
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json(ErrorResponse)
+    }
+    if(!req.body.price_range || req.body.price_range === ""){
+        ErrorResponse.message = "Price Range can't be empty.";
+        ErrorResponse.error = new AppError(["Price Range is not found in the incoming message"],StatusCodes.BAD_REQUEST);
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json(ErrorResponse)
+    }
+    next();
+}
+
+function validatePostUpdateRequest(req, res, next){
+    if(!req.body.id && req.body.id === "" && req.query.id === ""){
+        ErrorResponse.message = "Post Id cannot be empty";
+        ErrorResponse.error = new AppError("Post id not found in the incoming message",StatusCodes.BAD_REQUEST);
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json(ErrorResponse)
+    }
+    next();
+}
+
+
 module.exports = {
     validateSignUpRequest,
     validateLoginRequest,
     validateAuthRequest,
+    validatePostRequest,
+    validatePostUpdateRequest,
 }

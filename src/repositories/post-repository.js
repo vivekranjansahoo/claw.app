@@ -24,6 +24,15 @@ class PostRepository extends CrudRepository {
         }
     }
 
+    async deletePost(id){
+        try {
+            const response = await Post.findOneAndDelete({_id: id})
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 module.exports = PostRepository;

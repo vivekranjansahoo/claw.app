@@ -1,4 +1,4 @@
-const { UserService, ApplicantService, JobService } = require('../services')
+const { UserService } = require('../services')
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes')
 
@@ -45,9 +45,9 @@ async function signin(req, res) {
     }
 }
 
-async function isAuthenticated(req, res) {
+async function authMe(req, res) {
     try {
-        const response = await UserService.isAuthenticated(req.headers['authorization']);
+        const response = req.body.user;
         SuccessResponse.data = response;
         req.user = response;
         return res
@@ -64,5 +64,5 @@ async function isAuthenticated(req, res) {
 module.exports = {
     createUser,
     signin,
-    isAuthenticated,
+    authMe,
 }

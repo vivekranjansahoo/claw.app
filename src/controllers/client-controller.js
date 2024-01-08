@@ -45,9 +45,9 @@ async function signin(req, res) {
     }
 }
 
-async function isAuthenticated(req, res) {
+async function authMe(req, res) {
     try {
-        const response = await ClientService.isAuthenticated(req.headers['authorization']);
+        const response = req.body.client;
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
@@ -78,6 +78,6 @@ async function getClientById(req, res) {
 module.exports = {
     createClient,
     signin,
-    isAuthenticated,
     getClientById,
+    authMe,
 }

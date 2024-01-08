@@ -12,6 +12,7 @@ const postSchema = new mongoose.Schema({
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
+        required: true,
     }
 }, { timestamps: true });
 
