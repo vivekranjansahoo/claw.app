@@ -3,4 +3,6 @@ module.exports = {
     UserRepository : require('./user-repository'),
     ClientRepository : require('./client-repository'),
     PostRepository : require('./post-repository'),
+    LeadRepository : require('./lead-repository'),
+    GigRepository : require('./gig-repository'),
 }

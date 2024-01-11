@@ -1,20 +1,23 @@
-const { PostService, ClientService } = require('../services')
+const { GigService } = require('../services')
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes');
 const AppError = require('../utils/errors/app-error');
 
 
 /**
- * POST:  /post
- * req.body {description: "", price_range: ""}
+ * POST:  /gig
+ * req.body {
+ *      country: "",
+ *      profession: "",
+ *      job_title: "",
+ *      description: "",
+ *      price_range: "",
+ *      pincode: "",
+ * }
  **/
-async function createPost(req, res) {
+async function createGig(req, res) {
     try {
-        const response = await PostService.createPost({
-            description: req.body.description,
-            price_range: req.body.price_range,
-            client: req.body.client.id,
-        });
+        const response = await GigService.createGig(req.body);
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
@@ -31,14 +34,14 @@ async function createPost(req, res) {
 /**
  * GET:  /post?id='<post-id>'
  **/
-async function getPost(req, res) {
+async function getGig(req, res) {
     try {
         const id = req.query.id;
         let response;
         if(id == undefined){
-            response = await PostService.getPosts();
+            response = await GigService.getGigs();
         }
-        else response = await PostService.getPostById(id);
+        else response = await GigService.getGigById(id);
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
@@ -55,25 +58,29 @@ async function getPost(req, res) {
  * PUT:  /post/:id
  * req.body: {}
  **/
-async function updatePost(req, res) {
+async function updateGig(req, res) {
     try {
         const id = req.body.id || req.query.id;
-        const clientId = req.body.client.id;
-        const post = await PostService.getPostById(id);
-        if(!post){
-            throw new AppError('Post did not exist for the given id', StatusCodes.NOT_FOUND);
+        const gig = await GigService.getGigById(id);
+        if(!gig){
+            throw new AppError('Gig did not exist for the given id', StatusCodes.NOT_FOUND);
 
         }
-        if(post.client != clientId){
-            throw new AppError('You are not authorized to update the post', StatusCodes.UNAUTHORIZED);
-        }
-        const description = req.body.description == undefined ? post.description : req.body.description;
-        const price_range = req.body.price_range == undefined ? post.price_range : req.body.price_range;
+        const country = req.body.country == undefined ? gig.country : req.body.country;
+        const profession = req.body.profession == undefined ? gig.profession : req.body.profession;
+        const job_title = req.body.job_title == undefined ? gig.job_title : req.body.job_title;
+        const description = req.body.description == undefined ? gig.description : req.body.description;
+        const price_range = req.body.price_range == undefined ? gig.price_range : req.body.price_range;
+        const pincode = req.body.pincode == undefined ? gig.pincode : req.body.pincode;
         const data = {
+            country,
+            profession,
+            job_title,
             description,
             price_range,
+            pincode,
         }
-        response = await PostService.updatePost(id, data);
+        response = await GigService.updateGig(id, data);
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
@@ -90,21 +97,14 @@ async function updatePost(req, res) {
  * DELETE:  /post/:id
  * req.body {id: '<post-id>'}
  **/
-async function deletePost(req, res) {
+async function deleteGig(req, res) {
     try {
         const id = req.body.id || req.query.id;
-        const clientId = req.body.client.id;
-        const post = await PostService.getPostById(id);
-        if(!post){
+        const gig = await GigService.getGigById(id);
+        if(!gig){
             throw new AppError("Post Doesn't exists for the given id", StatusCodes.BAD_REQUEST);
         }
-        if(post.client != clientId){
-            throw new AppError('You are not authorized to delete the post', StatusCodes.UNAUTHORIZED);
-        }
-        const response = await PostService.deletePost({
-            postId: id,
-            clientId: clientId,
-        });
+        const response = await GigService.deleteGig(id);
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
@@ -117,8 +117,8 @@ async function deletePost(req, res) {
     }
 }
 module.exports = {
-    createPost,
-    getPost,
-    updatePost,
-    deletePost,
+    createGig,
+    getGig,
+    updateGig,
+    deleteGig,
 }
