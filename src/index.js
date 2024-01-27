@@ -13,15 +13,16 @@ app.use(cors())
 
 app.use('/api', apiRoutes);
 
-app.use('/verify', (req, res)=>{
-    const url = `http://localhost:3001`+req.originalUrl;
-    proxy.web(req, res, {target: url});
+app.use('/verify', (req, res) => {
+    const url = `http://localhost:3001` + req.originalUrl;
+    proxy.web(req, res, { target: url });
 });
 
 
-app.use('/fetchHeadlines/*', (req, res)=>{
-    const url = `http://localhost:3001`+req.originalUrl;
-    proxy.web(req, res, {target: url});}
+app.use('/fetchHeadlines/*', (req, res) => {
+    const url = `http://localhost:3001` + req.originalUrl;
+    proxy.web(req, res, { target: url });
+}
 );
 
 app.use('', (req, res) => {
