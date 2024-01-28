@@ -1,6 +1,6 @@
 const express = require('express');
-const { ServerConfig, ConnectDB } = require('./src/config');
-const apiRoutes = require('./src/routes')
+const { ServerConfig, ConnectDB } = require('../src/config');
+const apiRoutes = require('../src/routes')
 const cors = require('cors');
 const app = express();
 const httpProxy = require('http-proxy');
