@@ -18,6 +18,11 @@ async function create_thread() {
     return thread;
 }
 
+async function delete_thread(thread_id) {
+    const thread = await openai.beta.threads.delete(thread_id);
+    return;
+}
+
 async function answer_request(question, thread_id, assistant_id) {
     const initial_content = "Answer with respect to the Indian Constitution: ";
     const message = await openai.beta.threads.messages.create(thread_id, {
@@ -47,6 +52,44 @@ async function answer_request(question, thread_id, assistant_id) {
         .filter(({ run_id, role }) => (run_id === run.id && role === 'assistant'))
         .map(({ role, created_at, content, id }) => ({ role, created_at, id, text: content[0].text.value }));
     return response;
+}
+async function answer_request_stream(req, res) {
+    try {
+        const { question, thread_id, assistant_id } = req.body;
+        const initial_content = "Answer with respect to the Indian Constitution: ";
+        const message = await openai.beta.threads.messages.create(thread_id, {
+            role: "user",
+            content: initial_content + question
+        });
+        const run = await openai.beta.threads.runs.create(thread_id, {
+            assistant_id,
+            instructions: "Answer with respect to the Indian Constitution"
+        });
+        let prevRunStatus = "queued";
+        let currRun = {};
+        res.write(`\nevent:${prevRunStatus}\n`);
+        while (currRun.status !== 'completed') {
+            currRun = await openai.beta.threads.runs.retrieve(
+                thread_id,
+                run.id
+            );
+            if (prevRunStatus !== currRun.status) {
+                prevRunStatus = currRun.status;
+                res.write(`\nevent:${prevRunStatus}\n`);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+
+        const messages = await openai.beta.threads.messages.list(thread_id);
+        const response = messages.body.data
+            .filter(({ run_id, role }) => (run_id === run.id && role === 'assistant'))
+            .map(({ role, created_at, content, id }) => ({ role, created_at, id, text: content[0].text.value }));
+        res.write(`data:${JSON.stringify(response[0])}\n\n`);
+
+    } catch (error) {
+        console.log(error);
+    }
+    return res.end();
 }
 
 async function conversation_history(thread_id) {
