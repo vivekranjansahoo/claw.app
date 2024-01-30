@@ -6,7 +6,7 @@ const openai = new OpenAI({ apiKey: OPEN_API_KEY });
 async function create_client() {
     const assistant = await openai.beta.assistants.create({
         name: "Lawyer",
-        instructions: "Answer with respect to the Indian Constitution",
+        instructions: "Answer with respect to the Indian Constitution and Keep the response strictly under 100 words",
         tools: [{ type: "code_interpreter" }],
         model: "gpt-3.5-turbo"
     })
@@ -24,14 +24,14 @@ async function delete_thread(thread_id) {
 }
 
 async function answer_request(question, thread_id, assistant_id) {
-    const initial_content = "Answer with respect to the Indian Constitution: ";
+    const initial_content = "Answer with respect to the Indian Constitution and keep the response strictly under 100 words: ";
     const message = await openai.beta.threads.messages.create(thread_id, {
         role: "user",
         content: initial_content + question
     });
     const run = await openai.beta.threads.runs.create(thread_id, {
         assistant_id,
-        instructions: "Answer with respect to the Indian Constitution"
+        instructions: "Answer with respect to the Indian Constitution and keep the response strictly under 100 words:"
     });
 
     let currRun = await openai.beta.threads.runs.retrieve(
@@ -56,14 +56,14 @@ async function answer_request(question, thread_id, assistant_id) {
 async function answer_request_stream(req, res) {
     try {
         const { question, thread_id, assistant_id } = req.body;
-        const initial_content = "Answer with respect to the Indian Constitution: ";
+        const initial_content = "Answer with respect to the Indian Constitution and keep the response strictly under 100 words: ";
         const message = await openai.beta.threads.messages.create(thread_id, {
             role: "user",
             content: initial_content + question
         });
         const run = await openai.beta.threads.runs.create(thread_id, {
             assistant_id,
-            instructions: "Answer with respect to the Indian Constitution"
+            instructions: "Answer with respect to the Indian Constitution and keep the response strictly under 100 words:"
         });
         let prevRunStatus = "queued";
         let currRun = {};
