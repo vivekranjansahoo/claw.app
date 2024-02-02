@@ -1,7 +1,8 @@
 module.exports = {
-    User : require('./user'),
+    User: require('./user'),
     Client: require('./client'),
     Post: require('./post'),
     Gig: require('./gig'),
     Lead: require('./lead'),
+    News: require('./news'),
 }

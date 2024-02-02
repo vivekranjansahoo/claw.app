@@ -9,11 +9,8 @@ const { StatusCodes } = require('http-status-codes')
  **/
 async function createUser(req, res) {
     try {
-        const response = await UserService.createUser({
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password,
-        });
+        // implement file upload and get the url
+        const response = await UserService.createUser(req.body);
         SuccessResponse.data = response;
         return res
             .status(StatusCodes.OK)
