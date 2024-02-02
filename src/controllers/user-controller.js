@@ -30,9 +30,11 @@ async function verify(req, res) {
             // create a new lawyer
             const response = await UserService.createUser(req.body);
             SuccessResponse.newUser = true;
+            SuccessResponse.registered = false;
             return res.status(StatusCodes.CREATED).json(SuccessResponse)
         }
         SuccessResponse.newUser = false;
+        SuccessResponse.registered = existing.registered;
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
         console.log(error);
