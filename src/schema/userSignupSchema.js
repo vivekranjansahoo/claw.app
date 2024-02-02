@@ -1,11 +1,10 @@
 const Joi = require("joi");
 
-const userSignupSchema = Joi.object({
+const schema = Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     gender: Joi.string().valid("male", "female", "others").required(),
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
     barCouncilId: Joi.string().required(),
     barCouncilNo: Joi.number().required(),
     barCouncilYear: Joi.number().required(),
@@ -14,6 +13,4 @@ const userSignupSchema = Joi.object({
     pincode: Joi.number().required(),
 });
 
-module.exports = {
-    userSignupSchema
-}
+module.exports = schema;

@@ -1,14 +1,28 @@
-const Joi = require('joi');
-const { userSignupSchema } = require('../../schema/userSignUpSchema');
-const { ErrorResponse } = require('../utils/common');
-const AppError = require('../utils/errors/app-error');
 const { StatusCodes } = require('http-status-codes');
+const Joi = require('joi');
+
+const userSignupSchema = require('../schema/userSignupSchema');
+const lawyerVerifySchema = require('../schema/lawyerVerifySchema');
+const AppError = require('../utils/errors/app-error');
+const { ErrorResponse } = require('../utils/common');
+
+
+async function validateLawyerVerifyRequest(req, res, next) {
+    try {
+        req.body.phoneNumber = req.body.phoneNumber.toString();
+        await lawyerVerifySchema.validateAsync(req.body);
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(StatusCodes.BAD_REQUEST).send(error);
+    }
+}
 
 async function validateUserSignUpRequest(req, res, next) {
     try {
-        req.body.barCouncilNo = Joi.attempt(req.body.barCouncilId, Joi.number());
-        req.body.barCouncilYear = Joi.attempt(req.body.barCouncilYear, Joi.number());
-        req.body.pincode = Joi.attempt(req.body.pincode, Joi.number());
+        req.body.barCouncilNo = parseInt(req.body.barCouncilId);
+        req.body.barCouncilYear = parseInt(req.body.barCouncilYear);
+        req.body.pincode = parseInt(req.body.pincode);
 
         await userSignupSchema.validateAsync(req.body);
         next();
@@ -114,4 +128,5 @@ module.exports = {
     validatePostRequest,
     validatePostUpdateRequest,
     validateUserSignUpRequest,
+    validateLawyerVerifyRequest,
 }

@@ -16,14 +16,14 @@ async function createUser(data) {
         };
     }
     catch (error) {
-        if(error.code === 11000){
+        if (error.code === 11000) {
             throw new AppError(error.message, StatusCodes.CONFLICT);
         }
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
-async function getUser(){
+async function getUser() {
     try {
         const user = await userRepository.get();
         return user;
@@ -45,7 +45,7 @@ async function signin(data) {
             throw new AppError('Password do not match', StatusCodes.BAD_REQUEST);
         }
         const jwt = createToken({ id: user.id, email: user.email });
-        
+
         return {
             jwt: jwt
         };
@@ -88,10 +88,22 @@ async function getUserById(id) {
     }
 }
 
+async function getUserByPhoneNumber(phoneNumber) {
+    try {
+        const user = await userRepository.getUserByPhoneNumber(phoneNumber);
+        return user;
+    }
+    catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createUser,
     signin,
     getUserFromToken,
     getUserById,
     getUser,
+    getUserByPhoneNumber,
 }

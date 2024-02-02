@@ -23,6 +23,24 @@ async function createUser(req, res) {
     }
 }
 
+async function verify(req, res) {
+    try {
+        const existing = await UserService.getUserByPhoneNumber(req.body.phoneNumber);
+        if (!existing) {
+            // create a new lawyer
+            const response = await UserService.createUser(req.body);
+            SuccessResponse.newUser = true;
+            return res.status(StatusCodes.CREATED).json(SuccessResponse)
+        }
+        SuccessResponse.newUser = false;
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log(error);
+        ErrorResponse.error = error;
+        return res.status(error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+    }
+}
+
 
 async function signin(req, res) {
     try {
@@ -62,4 +80,5 @@ module.exports = {
     createUser,
     signin,
     authMe,
+    verify,
 }

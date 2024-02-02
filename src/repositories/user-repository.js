@@ -23,10 +23,19 @@ class UserRepository extends CrudRepository {
             throw error;
         }
     }
-    
+
     async getUserByUsername(username) {
         try {
             const user = await User.findOne({ username });
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserByPhoneNumber(phoneNumber) {
+        try {
+            const user = await User.findOne({ phoneNumber });
             return user;
         } catch (error) {
             throw error;
