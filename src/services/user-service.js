@@ -23,6 +23,16 @@ async function createUser(data) {
     }
 }
 
+async function updateUserByPhoneNumber(phoneNumber, data) {
+    try {
+        const user = await userRepository.updateByPhoneNumber(phoneNumber, data);
+        return user;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 async function getUser() {
     try {
         const user = await userRepository.get();
@@ -106,4 +116,5 @@ module.exports = {
     getUserById,
     getUser,
     getUserByPhoneNumber,
+    updateUserByPhoneNumber,
 }

@@ -18,12 +18,13 @@ async function validateLawyerVerifyRequest(req, res, next) {
     }
 }
 
-async function validateUserSignUpRequest(req, res, next) {
+async function validateUserRegisterRequest(req, res, next) {
     try {
         req.body.barCouncilNo = parseInt(req.body.barCouncilId);
         req.body.barCouncilYear = parseInt(req.body.barCouncilYear);
         req.body.pincode = parseInt(req.body.pincode);
-
+        req.body.phoneNumber = req.body.phoneNumber.toString();
+        if (!req.file?.buffer) throw new AppError("Missing identification attachment");
         await userSignupSchema.validateAsync(req.body);
         next();
     }
@@ -127,6 +128,6 @@ module.exports = {
     validateAuthRequest,
     validatePostRequest,
     validatePostUpdateRequest,
-    validateUserSignUpRequest,
+    validateUserRegisterRequest,
     validateLawyerVerifyRequest,
 }

@@ -1,17 +1,20 @@
-const { UserService } = require('../services')
+const { AWS_S3_BUCKET_NAME, AWS_REGION } = require('../config/server-config');
+const { UserService } = require('../services');
+const { uploadFile } = require('../services/s3-service');
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
-const { StatusCodes } = require('http-status-codes')
+const { StatusCodes } = require('http-status-codes');
+const path = require("path");
 
 
-/**
- * POST:  /signup
- * req.body {username: 'username', email: 'user@gmail.com', password: "dsfj9sdjfoijw09"}
- **/
-async function createUser(req, res) {
+
+async function registerUser(req, res) {
     try {
         // implement file upload and get the url
-        const response = await UserService.createUser(req.body);
-        SuccessResponse.data = response;
+        const ext = path.extname(req.file.originalname);
+        const uploadResponse = await uploadFile(req.file.buffer, `id_${req.body.barCouncilId}${ext}`);
+        const { phoneNumber, ...data } = req.body;
+        data.id_url = `https://${AWS_S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/id_${req.body.barCouncilId}${ext}`;
+        await UserService.updateUserByPhoneNumber(phoneNumber, data);
         return res
             .status(StatusCodes.OK)
             .json(SuccessResponse)
@@ -79,7 +82,7 @@ async function authMe(req, res) {
 }
 
 module.exports = {
-    createUser,
+    registerUser,
     signin,
     authMe,
     verify,

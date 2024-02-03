@@ -42,6 +42,22 @@ class UserRepository extends CrudRepository {
         }
     }
 
+    async updateByPhoneNumber(phoneNumber, data) {
+        try {
+            const response = await this.model.findOneAndUpdate(
+                {phoneNumber},
+                data,
+                {
+                    new: true
+                }
+            );
+            return response;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 module.exports = UserRepository;

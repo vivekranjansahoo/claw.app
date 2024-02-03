@@ -11,6 +11,7 @@ const schema = Joi.object({
     state: Joi.string().required(),
     city: Joi.string().required(),
     pincode: Joi.number().required(),
+    phoneNumber: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
 });
 
 module.exports = schema;

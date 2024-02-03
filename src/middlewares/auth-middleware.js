@@ -1,6 +1,6 @@
 const { ClientService, UserService } = require('../services');
 const { ErrorResponse } = require('../utils/common/');
-const {StatusCodes} = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 const { verifyToken } = require('../utils/common/auth');
 const AppError = require('../utils/errors/app-error')
 
@@ -45,8 +45,20 @@ async function checkClientAuth(req, res, next) {
     }
 }
 
+async function checkExistingLawyer(req, res, next) {
+    try {
+        const lawyer = await UserService.getUserByPhoneNumber(req.body.phoneNumber);
+        if (!lawyer) throw new AppError("Unauthorized, Please verify first", StatusCodes.FORBIDDEN);
+        next();
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res.status(error.statusCode).json(ErrorResponse);
+    }
+}
+
 
 module.exports = {
     checkUserAuth,
     checkClientAuth,
+    checkExistingLawyer,
 }

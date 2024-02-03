@@ -16,4 +16,8 @@ module.exports = {
     id: process.env.id,
     OPEN_API_KEY: process.env.OPEN_API_KEY,
     MEDIA_STACK_ACCESS_KEY: process.env.MEDIA_STACK_ACCESS_KEY,
+    AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+    AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
 };
