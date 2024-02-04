@@ -20,7 +20,7 @@ async function validateLawyerVerifyRequest(req, res, next) {
 
 async function validateUserRegisterRequest(req, res, next) {
     try {
-        req.body.barCouncilNo = parseInt(req.body.barCouncilId);
+        req.body.barCouncilNo = parseInt(req.body.barCouncilNo);
         req.body.barCouncilYear = parseInt(req.body.barCouncilYear);
         req.body.pincode = parseInt(req.body.pincode);
         req.body.phoneNumber = req.body.phoneNumber.toString();
