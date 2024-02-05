@@ -17,12 +17,12 @@ const upload = multer({
         fileSize: 1024 * 1024
     }
 });
-
+// signup conditions -> user verified, user not registered already, api contains required fields
 router.post(
     '/signup',
     upload.single('uploaded_id'),
-    validateRequestMiddleware.validateUserRegisterRequest,
-    authMiddleware.checkExistingLawyer,
+    authMiddleware.checkVerifiedLawyer,
+    validateRequestMiddleware.validateLawyerRegisterRequest,
     UserController.registerUser
 );
 

@@ -18,13 +18,14 @@ async function validateLawyerVerifyRequest(req, res, next) {
     }
 }
 
-async function validateUserRegisterRequest(req, res, next) {
+async function validateLawyerRegisterRequest(req, res, next) {
     try {
         req.body.barCouncilNo = parseInt(req.body.barCouncilNo);
         req.body.barCouncilYear = parseInt(req.body.barCouncilYear);
         req.body.pincode = parseInt(req.body.pincode);
         req.body.phoneNumber = req.body.phoneNumber.toString();
         if (!req.file?.buffer) throw new AppError("Missing identification attachment");
+        if (req.lawyer.registered) throw new AppError("Lawyer already registered");
         await userSignupSchema.validateAsync(req.body);
         next();
     }
@@ -128,6 +129,6 @@ module.exports = {
     validateAuthRequest,
     validatePostRequest,
     validatePostUpdateRequest,
-    validateUserRegisterRequest,
+    validateLawyerRegisterRequest,
     validateLawyerVerifyRequest,
 }

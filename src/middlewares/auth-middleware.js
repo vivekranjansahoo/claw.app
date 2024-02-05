@@ -45,14 +45,26 @@ async function checkClientAuth(req, res, next) {
     }
 }
 
-async function checkExistingLawyer(req, res, next) {
+async function checkVerifiedLawyer(req, res, next) {
     try {
         const lawyer = await UserService.getUserByPhoneNumber(req.body.phoneNumber);
-        if (!lawyer) throw new AppError("Unauthorized, Please verify first", StatusCodes.FORBIDDEN);
+        if (!lawyer) throw new AppError("No lawyer found", StatusCodes.NOT_FOUND);
+        if (!lawyer.verified) throw new AppError("Please verify first", StatusCodes.FORBIDDEN);
+        req.lawyer = lawyer;
         next();
     } catch (error) {
-        ErrorResponse.error = error;
-        return res.status(error.statusCode).json(ErrorResponse);
+        return res.status(error.statusCode).json(ErrorResponse({}, error));
+    }
+}
+
+async function checkRegisteredLawyer(req, res, next) {
+    try {
+        const lawyer = await UserService.getUserByPhoneNumber(req.body.phoneNumber);
+        if (!lawyer || !lawyer.registered) throw new AppError("Unauthorized, Please register first", StatusCodes.FORBIDDEN);
+        req.lawyer = lawyer;
+        next();
+    } catch (error) {
+        return res.status(error.statusCode).json(ErrorResponse({}, error));
     }
 }
 
@@ -60,5 +72,6 @@ async function checkExistingLawyer(req, res, next) {
 module.exports = {
     checkUserAuth,
     checkClientAuth,
-    checkExistingLawyer,
+    checkVerifiedLawyer,
+    checkRegisteredLawyer,
 }

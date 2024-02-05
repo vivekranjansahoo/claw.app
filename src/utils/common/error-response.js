@@ -1,9 +1,9 @@
-const error = {
+const error = (data = {}, error = {}) => ({
     success: false,
     message: "Something Went Wrong",
-    data: {},
-    error: {}
-}
+    data,
+    error
+})
 
 
 module.exports = error;
