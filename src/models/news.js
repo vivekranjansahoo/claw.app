@@ -20,6 +20,10 @@ const newsSchema = new mongoose.Schema({
     publishedAt: {
         type: Date,
         required: true
+    },
+    type: {
+        type: Number,
+        required: true
     }
 }, { timestamps: true });
 

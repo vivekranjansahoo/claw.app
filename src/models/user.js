@@ -10,9 +10,10 @@ const userSchema = new mongoose.Schema({
     barCouncilId: { type: String },
     barCouncilNo: { type: Number },
     barCouncilYear: { type: Number },
-    state: { type: String }, // add states enum ?
-    city: { type: String }, // add city enum ?
+    state: { type: String },
+    city: { type: String },
     pincode: { type: Number },
+    searchTag: { type: String },
     id_url: { type: String },
     phoneNumber: { type: String, required: true },
     verified: { type: Boolean, default: false },

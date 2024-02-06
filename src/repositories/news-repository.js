@@ -1,4 +1,4 @@
-const { CrudRepository } = require(".");
+const CrudRepository = require("./crud-repository");
 const { News } = require("../models");
 
 class NewsRespository extends CrudRepository {
@@ -6,12 +6,21 @@ class NewsRespository extends CrudRepository {
         super(News);
     }
 
-    async deleteOlderThan(timestamp) {
+    async findByType(type) {
         try {
-            const deletedNews = await News.deleteMany({ createdAt: { $lte: timestamp } });
+            const news = await News.find({ type });
+            return news;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deleteOlderThan(type, timestamp) {
+        try {
+            const deletedNews = await News.deleteMany({ type, createdAt: { $lte: timestamp } });
             return deletedNews;
         } catch (error) {
-            console.log(error);
+            throw error;
         }
     }
 }
