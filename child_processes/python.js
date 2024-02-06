@@ -3,6 +3,9 @@ const { MONGOURI } = require('../src/config/server-config');
 
 const pythonProcess = spawn('python', ['search.py', MONGOURI]);
 pythonProcess.stdin.setDefaultEncoding('utf-8');
+pythonProcess.stdout.on('data', (data) => {
+    console.log(`Python stdout: ${data}`);
+});
 pythonProcess.stderr.on('data', (data) => {
     console.error(`Python stderr: ${data}`);
 });

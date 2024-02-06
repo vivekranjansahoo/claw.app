@@ -7,6 +7,7 @@ Created on Fri Jan  5 21:02:50 2024
 
 from sentence_transformers import SentenceTransformer, InputExample, losses, util
 import json
+import torch
 from pymongo import MongoClient
 import sys
 
