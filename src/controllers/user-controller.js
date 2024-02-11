@@ -72,17 +72,16 @@ async function signin(req, res) {
 
 async function authMe(req, res) {
     try {
-        const response = req.body.user;
-        SuccessResponse.data = response;
-        req.user = response;
+
+        const successResponse = SuccessResponse(req.body.user);
         return res
             .status(StatusCodes.OK)
-            .json(SuccessResponse);
+            .json(successResponse);
     }
     catch (error) {
-        ErrorResponse.error = error
-        return res.status(error.statusCode)
-            .json(ErrorResponse)
+        const errorResponse = ErrorResponse({}, error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(errorResponse)
     }
 }
 

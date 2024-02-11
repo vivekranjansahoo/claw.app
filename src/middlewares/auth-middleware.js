@@ -6,7 +6,7 @@ const AppError = require('../utils/errors/app-error')
 
 async function checkUserAuth(req, res, next) {
     try {
-        const token = req.headers['authorization'];
+        const token = req.headers['authorization'].split(" ")[1];
         if (!token) {
             throw new AppError('Missing jwt token', StatusCodes.BAD_REQUEST);
         }
@@ -19,9 +19,9 @@ async function checkUserAuth(req, res, next) {
         console.log(req.body);
         next();
     } catch (error) {
-        ErrorResponse.error = error
-        return res.status(error.statusCode)
-            .json(ErrorResponse)
+        const errorResponse = ErrorResponse(error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(errorResponse)
     }
 }
 
