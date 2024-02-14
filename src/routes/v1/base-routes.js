@@ -2,6 +2,7 @@ const express = require('express');
 const { SuccessResponse, ErrorResponse } = require('../../utils/common');
 const AppError = require('../../utils/errors/app-error');
 const { getNews } = require('../../services/news-service');
+const { ClientController, UserController } = require('../../controllers');
 const router = express.Router();
 
 router.post('/news', async (req, res) => {
@@ -13,6 +14,10 @@ router.post('/news', async (req, res) => {
         res.status(error.statusCode || 500).json(ErrorResponse({}, error));
     }
 })
+
+router.get('/lawyers', UserController.getAllLawyers);
+
+router.get('/clients', ClientController.getAllClients)
 
 
 module.exports = router;

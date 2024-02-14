@@ -14,7 +14,14 @@ class ClientRepository extends CrudRepository {
             throw error;
         }
     }
-
+    async getAll() {
+        try {
+            const clients = await Client.find().select('phoneNumber')
+            return clients;
+        } catch (error) {
+            throw error;
+        }
+    }
     async getClientByEmail(email) {
         try {
             const client = await Client.findOne({ email });
@@ -33,22 +40,22 @@ class ClientRepository extends CrudRepository {
         }
     }
 
-    async addPosttoClient(clientId, postId){
-        try{
-            const response = await Client.findByIdAndUpdate(clientId, {$push: {posts: postId}}, {new: true});
+    async addPosttoClient(clientId, postId) {
+        try {
+            const response = await Client.findByIdAndUpdate(clientId, { $push: { posts: postId } }, { new: true });
             return response;
         }
-        catch(error){
+        catch (error) {
             throw error;
         }
     }
 
-    async deletePostfromClient(clientId, postId){
-        try{
-            const response = await Client.findByIdAndUpdate(clientId, {$pull: {posts: postId}}, {new: true});
+    async deletePostfromClient(clientId, postId) {
+        try {
+            const response = await Client.findByIdAndUpdate(clientId, { $pull: { posts: postId } }, { new: true });
             return response;
         }
-        catch(error){
+        catch (error) {
             throw error;
         }
     }

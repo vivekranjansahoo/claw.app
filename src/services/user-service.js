@@ -86,6 +86,16 @@ async function getUserFromToken(token) {
     }
 }
 
+async function getAllLawyers() {
+    try {
+        const lawyers = await userRepository.getAll();
+        return lawyers 
+    }
+    catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 
 async function getUserById(id) {
     try {
@@ -115,6 +125,7 @@ module.exports = {
     getUserFromToken,
     getUserById,
     getUser,
+    getAllLawyers,
     getUserByPhoneNumber,
     updateUserByPhoneNumber,
 }

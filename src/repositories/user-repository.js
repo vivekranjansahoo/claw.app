@@ -6,6 +6,15 @@ class UserRepository extends CrudRepository {
         super(User);
     }
 
+    async getAll() {
+        try {
+            const users = await User.find().select('firstName lastName phoneNumber').exec();
+            return users
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getUserById(id) {
         try {
             const user = await User.findById(id).exec();
@@ -45,7 +54,7 @@ class UserRepository extends CrudRepository {
     async updateByPhoneNumber(phoneNumber, data) {
         try {
             const response = await this.model.findOneAndUpdate(
-                {phoneNumber},
+                { phoneNumber },
                 data,
                 {
                     new: true

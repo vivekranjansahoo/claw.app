@@ -85,9 +85,21 @@ async function authMe(req, res) {
     }
 }
 
+async function getAllLawyers(req, res) {
+    try {
+        const data = await UserService.getAllLawyers();
+        const successResponse = SuccessResponse(data);
+        return res.status(StatusCodes.OK).json(successResponse);
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+}
+
 module.exports = {
     registerUser,
     signin,
     authMe,
     verify,
+    getAllLawyers,
 }

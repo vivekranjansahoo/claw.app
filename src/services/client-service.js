@@ -17,7 +17,7 @@ async function createClient(data) {
     }
     catch (error) {
         console.log(error);
-        if(error.code === 11000){
+        if (error.code === 11000) {
             throw new AppError(error.message, StatusCodes.CONFLICT);
         }
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -77,7 +77,7 @@ async function getClientById(id) {
     }
 }
 
-async function updateClient(id, data){
+async function updateClient(id, data) {
     try {
         const client = await clientRepository.update(id, data);
         return client;
@@ -87,7 +87,7 @@ async function updateClient(id, data){
     }
 }
 
-async function addPosttoClient(clientId, postId){
+async function addPosttoClient(clientId, postId) {
     try {
         const client = await clientRepository.addPosttoClient(clientId, postId);
         return client;
@@ -97,10 +97,20 @@ async function addPosttoClient(clientId, postId){
     }
 }
 
-async function deletePostfromClient(clientId, postId){
+async function deletePostfromClient(clientId, postId) {
     try {
         const client = await clientRepository.deletePostfromClient(clientId, postId);
         return client;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function getAllClients() {
+    try {
+        const clients = await clientRepository.getAll();
+        return clients;
     } catch (error) {
         console.log(error);
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -114,5 +124,6 @@ module.exports = {
     getClientById,
     updateClient,
     addPosttoClient,
+    getAllClients,
     deletePostfromClient,
 }

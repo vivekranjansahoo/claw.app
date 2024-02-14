@@ -75,9 +75,26 @@ async function getClientById(req, res) {
     }
 }
 
+async function register(req, res) {
+
+}
+
+
+async function getAllClients(req, res) {
+    try {
+        const data = await ClientService.getAllClients();
+        const successResponse = SuccessResponse(data);
+        return res.status(StatusCodes.OK).json(successResponse);
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+}
+
 module.exports = {
     createClient,
     signin,
     getClientById,
     authMe,
+    getAllClients,
 }
