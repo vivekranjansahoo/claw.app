@@ -26,8 +26,11 @@ router.post(
     UserController.registerUser
 );
 
-router.post('/verify', validateRequestMiddleware.validateLawyerVerifyRequest, UserController.verify);
-router.post('/login', validateRequestMiddleware.validateLoginRequest, UserController.signin);
 router.get('/auth/me', authMiddleware.checkUserAuth, UserController.authMe);
+router.get('/list', UserController.getAllLawyers);
+
+router.post('/login', validateRequestMiddleware.validateLoginRequest, UserController.signin);
+router.post('/verify', validateRequestMiddleware.validateLawyerVerifyRequest, UserController.verify);
+router.patch('/', upload.single('profilePicture'), validateRequestMiddleware.validateLawyerUpdateRequest, authMiddleware.checkUserAuth, UserController.updateUser);
 
 module.exports = router;

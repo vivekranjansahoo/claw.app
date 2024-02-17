@@ -1,11 +1,46 @@
 const { StatusCodes } = require('http-status-codes');
 const Joi = require('joi');
 
-const userSignupSchema = require('../schema/userSignupSchema');
+const lawyerRegisterSchema = require('../schema/lawyerRegisterSchema');
 const lawyerVerifySchema = require('../schema/lawyerVerifySchema');
+const lawyerUpdateSchema = require("../schema/lawyerUpdateSchema");
+const clientVerifySchema = require('../schema/clientVerifySchema');
+const clientUpdateSchema = require("../schema/clientUpdateSchema");
 const AppError = require('../utils/errors/app-error');
 const { ErrorResponse } = require('../utils/common');
 
+async function validateLawyerUpdateRequest(req, res, next) {
+    try {
+        await lawyerUpdateSchema.validateAsync(req.body);
+        next();
+    } catch (error) {
+        errorResponse = ErrorResponse({}, error);
+        res.status(StatusCodes.BAD_REQUEST).json(error);
+    }
+}
+
+async function validateClientUpdateRequest(req, res, next) {
+    try {
+        await clientUpdateSchema.validateAsync(req.body);
+        next();
+    } catch (error) {
+        errorResponse = ErrorResponse({}, error);
+        res.status(StatusCodes.BAD_REQUEST).json(error);
+    }
+}
+
+async function validateClientVerifyRequest(req, res, next) {
+    try {
+        if (req.verified) {
+            req.verified = req.verified.toLowerCase() === 'true' ? true : false;
+        }
+        await clientVerifySchema.validateAsync(req.body);
+        next()
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error);
+        res.status(StatusCodes.BAD_REQUEST).json(errorResponse);
+    }
+}
 
 async function validateLawyerVerifyRequest(req, res, next) {
     try {
@@ -26,7 +61,7 @@ async function validateLawyerRegisterRequest(req, res, next) {
         req.body.phoneNumber = req.body.phoneNumber.toString();
         if (!req.file?.buffer) throw new AppError("Missing identification attachment");
         if (req.lawyer.registered) throw new AppError("Lawyer already registered");
-        await userSignupSchema.validateAsync(req.body);
+        await lawyerRegisterSchema.validateAsync(req.body);
         next();
     }
     catch (error) {
@@ -130,5 +165,8 @@ module.exports = {
     validatePostRequest,
     validatePostUpdateRequest,
     validateLawyerRegisterRequest,
+    validateLawyerUpdateRequest,
     validateLawyerVerifyRequest,
+    validateClientVerifyRequest,
+    validateClientUpdateRequest
 }

@@ -15,9 +15,4 @@ router.post('/news', async (req, res) => {
     }
 })
 
-router.get('/lawyers', UserController.getAllLawyers);
-
-router.get('/clients', ClientController.getAllClients)
-
-
 module.exports = router;

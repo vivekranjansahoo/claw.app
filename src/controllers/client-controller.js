@@ -1,6 +1,9 @@
-const { ClientService } = require('../services')
-const { ErrorResponse, SuccessResponse } = require("../utils/common")
-const { StatusCodes } = require('http-status-codes')
+const { ClientService } = require('../services');
+const { ErrorResponse, SuccessResponse } = require("../utils/common");
+const { StatusCodes } = require('http-status-codes');
+const path = require("path");
+const { uploadFile } = require('../services/s3-service');
+const { AWS_S3_BUCKET_NAME, AWS_REGION } = require('../config/server-config');
 
 
 /**
@@ -75,8 +78,23 @@ async function getClientById(req, res) {
     }
 }
 
-async function register(req, res) {
-
+async function verify(req, res) {
+    try {
+        const { phoneNumber, verified } = req.body;
+        const data = await ClientService.createClient({
+            phoneNumber,
+            verified
+        });
+        const successResponse = SuccessResponse(data);
+        return res
+            .status(StatusCodes.OK)
+            .json(successResponse)
+    }
+    catch (error) {
+        const errorResponse = ErrorResponse({}, error)
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(errorResponse)
+    }
 }
 
 
@@ -91,10 +109,33 @@ async function getAllClients(req, res) {
     }
 }
 
+async function updateClient(req, res) {
+    try {
+        const { client, ...data } = req.body;
+        const { id } = client;
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            await uploadFile(req.file.buffer, `profilePic_client_${id}${ext}`);
+            data.profilePicture = `https://${AWS_S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/profilePic_client_${id}${ext}`;
+        }
+
+        const updatedClient = await ClientService.updateClient(id, data);
+        const successResponse = SuccessResponse(updatedClient);
+        return res.status(StatusCodes.OK).json(successResponse)
+
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+}
+
+
 module.exports = {
     createClient,
     signin,
     getClientById,
     authMe,
     getAllClients,
+    verify,
+    updateClient
 }

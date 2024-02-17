@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
     pincode: { type: Number },
     searchTag: { type: String },
     id_url: { type: String },
-    phoneNumber: { type: String, required: true },
+    profilePicture: { type: String },
+    phoneNumber: { type: String, required: true, unique: true },
     verified: { type: Boolean, default: false },
     registered: { type: Boolean, default: false }
 }, { timestamps: true });

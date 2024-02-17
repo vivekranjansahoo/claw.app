@@ -9,7 +9,7 @@ const clientRepository = new ClientRepository();
 async function createClient(data) {
     try {
         const client = await clientRepository.create(data);
-        const jwt = createToken({ id: client.id, email: client.email });
+        const jwt = createToken({ id: client.id, phoneNumber: client.phoneNumber });
         return {
             client,
             jwt

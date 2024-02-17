@@ -23,6 +23,16 @@ async function createUser(data) {
     }
 }
 
+async function updateUser(id, data) {
+    try {
+        const user = await userRepository.update(id, data);
+        return user;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 async function updateUserByPhoneNumber(phoneNumber, data) {
     try {
         const user = await userRepository.updateByPhoneNumber(phoneNumber, data);
@@ -89,7 +99,7 @@ async function getUserFromToken(token) {
 async function getAllLawyers() {
     try {
         const lawyers = await userRepository.getAll();
-        return lawyers 
+        return lawyers
     }
     catch (error) {
         console.log(error);
@@ -128,4 +138,5 @@ module.exports = {
     getAllLawyers,
     getUserByPhoneNumber,
     updateUserByPhoneNumber,
+    updateUser,
 }

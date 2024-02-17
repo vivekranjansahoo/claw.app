@@ -18,7 +18,7 @@ async function registerUser(req, res) {
         data.registered = true;
         const updatedUser = await UserService.updateUserByPhoneNumber(phoneNumber, data);
 
-        const jwt = createToken({ id: updatedUser.id, email: updatedUser.email });
+        const jwt = createToken({ id: updatedUser.id, phoneNumber: updatedUser.phoneNumber });
         const successResponse = SuccessResponse({ jwt });
         return res
             .status(StatusCodes.OK)
@@ -43,8 +43,7 @@ async function verify(req, res) {
         const { verified } = req.body;
         await UserService.updateUserByPhoneNumber(req.body.phoneNumber, { verified });
         const successResponse = SuccessResponse({ newUser: false, registered: existing.registered, verified: verified })
-
-        if (existing.registered) successResponse.data.jwt = createToken({ id: existing.id, email: existing.email });
+        if (existing.registered) successResponse.data.jwt = createToken({ id: existing.id, phoneNumber: existing.phoneNumber });
         return res.status(StatusCodes.OK).json(successResponse);
     } catch (error) {
         return res.status(error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
@@ -96,10 +95,31 @@ async function getAllLawyers(req, res) {
     }
 }
 
+async function updateUser(req, res) {
+    try {
+        const { user, ...data } = req.body;
+        const { id } = user;
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            await uploadFile(req.file.buffer, `profilePic_lawyer_${id}${ext}`);
+            data.profilePicture = `https://${AWS_S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/profilePic_lawyer_${id}${ext}`;
+        }
+
+        const updatedUser = await UserService.updateUser(id, data);
+        const successResponse = SuccessResponse(updatedUser);
+        return res.status(StatusCodes.OK).json(successResponse)
+
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+}
+
 module.exports = {
     registerUser,
     signin,
     authMe,
     verify,
     getAllLawyers,
+    updateUser
 }
