@@ -24,8 +24,8 @@ async function validateClientUpdateRequest(req, res, next) {
         await clientUpdateSchema.validateAsync(req.body);
         next();
     } catch (error) {
-        errorResponse = ErrorResponse({}, error);
-        res.status(StatusCodes.BAD_REQUEST).json(error);
+        const errorResponse = ErrorResponse({}, error);
+        res.status(StatusCodes.BAD_REQUEST).json(errorResponse);
     }
 }
 
