@@ -93,8 +93,9 @@ async function verify(req, res) {
             const successResponse = SuccessResponse(data);
             res.status(StatusCodes.CREATED).json(successResponse);
         }
-        await ClientService.updateClient(existing.id, { verified });
-        const successResponse = SuccessResponse({ newClient: false, verified: verified });
+        const updatedClient = await ClientService.updateClient(existing.id, { verified });
+        const jwt = createToken({ id: updatedClient.id, phoneNumber })
+        const successResponse = SuccessResponse({ newClient: false, verified: verified, jwt });
         return res
             .status(StatusCodes.OK)
             .json(successResponse)
