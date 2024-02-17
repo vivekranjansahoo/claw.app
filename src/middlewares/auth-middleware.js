@@ -38,9 +38,9 @@ async function checkClientAuth(req, res, next) {
         req.body.client = client;
         next();
     } catch (error) {
-        ErrorResponse.error = error
-        return res.status(error.statusCode)
-            .json(ErrorResponse)
+        const errorResponse = ErrorResponse({}, error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(errorResponse)
     }
 }
 
