@@ -4,6 +4,7 @@ const { StatusCodes } = require('http-status-codes');
 const path = require("path");
 const { uploadFile } = require('../services/s3-service');
 const { AWS_S3_BUCKET_NAME, AWS_REGION } = require('../config/server-config');
+const { createToken } = require('../utils/common/auth');
 
 
 /**
@@ -81,11 +82,19 @@ async function getClientById(req, res) {
 async function verify(req, res) {
     try {
         const { phoneNumber, verified } = req.body;
-        const data = await ClientService.createClient({
-            phoneNumber,
-            verified
-        });
-        const successResponse = SuccessResponse(data);
+        const existing = await ClientService.getClientByPhoneNumber(phoneNumber);
+        if (!existing) {
+            const { client, jwt } = await ClientService.createClient({
+                phoneNumber,
+                verified
+            });
+            const data = { verified: client.verified, newClient: true };
+            if (verified) data.jwt = jwt;
+            const successResponse = SuccessResponse(data);
+            res.status(StatusCodes.CREATED).json(successResponse);
+        }
+        await ClientService.updateClient(existing.id, { verified });
+        const successResponse = SuccessResponse({ newClient: false, verified: verified });
         return res
             .status(StatusCodes.OK)
             .json(successResponse)

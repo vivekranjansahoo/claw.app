@@ -65,6 +65,15 @@ async function getClientFromToken(token) {
     }
 }
 
+async function getClientByPhoneNumber(phoneNumber) {
+    try {
+        const client = await clientRepository.getClientByPhoneNumber(phoneNumber);
+        return client;
+    } catch (error) {
+        console.log(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 
 async function getClientById(id) {
     try {
@@ -126,4 +135,5 @@ module.exports = {
     addPosttoClient,
     getAllClients,
     deletePostfromClient,
+    getClientByPhoneNumber
 }
