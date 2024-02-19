@@ -52,15 +52,14 @@ async function signin(req, res) {
 async function authMe(req, res) {
     try {
         const response = req.body.client;
-        SuccessResponse.data = response;
+        const successResponse = SuccessResponse(response);
         return res
             .status(StatusCodes.OK)
-            .json(SuccessResponse)
+            .json(successResponse)
     }
     catch (error) {
-        ErrorResponse.error = error
         return res.status(error.statusCode)
-            .json(ErrorResponse)
+            .json(ErrorResponse({}, error));
     }
 }
 

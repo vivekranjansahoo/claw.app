@@ -5,4 +5,5 @@ module.exports = {
     Gig: require('./gig'),
     Lead: require('./lead'),
     News: require('./news'),
+    Blog: require('./blog'),
 }

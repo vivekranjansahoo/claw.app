@@ -5,15 +5,17 @@ const PostRoutes = require('./post-routes');
 const GigRoutes = require('./gig-routes');
 const LegalGPTRoutes = require('./legalGPT-routes');
 const LeadRoutes = require('./lead-routes');
-const BaseRouter = require('./base-routes');
+const BaseRoutes = require('./base-routes');
+const BlogsRoutes = require('./blog-routes');
 const router = express.Router();
 
 router.use('/user', UserRoutes);
 router.use('/client', ClientRoutes);
 router.use('/post', PostRoutes);
 router.use('/lead', LeadRoutes);
-router.use('/', BaseRouter);
+router.use('/', BaseRoutes);
 router.use('/gig', GigRoutes);
 router.use('/legalGPT', LegalGPTRoutes);
+router.use('/blog', BlogsRoutes)
 
 module.exports = router;

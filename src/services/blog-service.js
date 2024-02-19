@@ -1,0 +1,39 @@
+const { BlogRepository } = require("../repositories");
+const AppError = require("../utils/errors/app-error");
+const { StatusCodes } = require('http-status-codes');
+
+const blogRepository = new BlogRepository();
+
+async function getAllBlogs() {
+    try {
+        const response = await blogRepository.get();
+        return response;
+    } catch (error) {
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+async function getLinkingBlogs(excludedId) {
+    try {
+        const response = await blogRepository.getLinkingBlogs(excludedId);
+        return response;
+    } catch (error) {
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function createBlog(data) {
+    try {
+        const response = await blogRepository.create(data);
+        return response;
+    } catch (error) {
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+module.exports = {
+    getAllBlogs,
+    getLinkingBlogs,
+    createBlog,
+}

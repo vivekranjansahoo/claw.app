@@ -6,4 +6,5 @@ module.exports = {
     LeadRepository: require('./lead-repository'),
     GigRepository: require('./gig-repository'),
     NewsRespository: require('./news-repository'),
+    BlogRepository: require('./blog-repository'),
 }
