@@ -24,7 +24,7 @@ async function getBlogById(req, res) {
 
 async function getLinkingBlogs(req, res) {
     try {
-        const { excludedId } = req.body;
+        const { excludedId } = req.params;
         const blogs = await BlogService.getLinkingBlogs(excludedId);
         return res.status(StatusCodes.OK).json(SuccessResponse(blogs));
     } catch (error) {

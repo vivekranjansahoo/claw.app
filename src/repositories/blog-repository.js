@@ -10,7 +10,7 @@ class BlogRepository extends CrudRepository {
 
     async getBlogById(blogId) {
         try {
-            return await this.model.find({ "_id": blogId });
+            return await this.model.findOne({ "_id": blogId });
         } catch (error) {
             console.log(error);
             throw error;
@@ -19,7 +19,7 @@ class BlogRepository extends CrudRepository {
 
     async getLinkingBlogs(excludedId) {
         try {
-            const response = await this.model.find({ "_id": { "$ne": excludedId } }).select('-content');
+            const response = await this.model.find({ "_id": { "$ne": excludedId } }).select('-content').limit(5);
             return response;
         } catch (error) {
             console.log(error);
