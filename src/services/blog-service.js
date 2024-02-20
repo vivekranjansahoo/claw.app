@@ -13,6 +13,14 @@ async function getAllBlogs() {
     }
 }
 
+async function getBlogById(blogId) {
+    try {
+        return await blogRepository.getBlogById(blogId);
+    } catch (error) {
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 async function getLinkingBlogs(excludedId) {
     try {
@@ -36,4 +44,5 @@ module.exports = {
     getAllBlogs,
     getLinkingBlogs,
     createBlog,
+    getBlogById,
 }
