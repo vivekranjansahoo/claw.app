@@ -10,7 +10,8 @@ const schema = Joi.object({
     barCouncilYear: Joi.number(),
     state: Joi.string(),
     city: Joi.string(),
-    pincode: Joi.number()
+    pincode: Joi.number(),
+    about: Joi.string(),
 });
 
 module.exports = schema;

@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     searchTag: { type: String },
     id_url: { type: String },
     profilePicture: { type: String },
+    about: { type: String },
     phoneNumber: { type: String, required: true, unique: true },
     verified: { type: Boolean, default: false },
     registered: { type: Boolean, default: false }
