@@ -13,18 +13,18 @@ async function getAllBlogs() {
     }
 }
 
-async function getBlogById(blogId) {
+async function getBlogByName(blogName) {
     try {
-        return await blogRepository.getBlogById(blogId);
+        return await blogRepository.getBlogByName(blogName);
     } catch (error) {
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
 
-async function getLinkingBlogs(excludedId) {
+async function getLinkingBlogs(excludedBlogName) {
     try {
-        const response = await blogRepository.getLinkingBlogs(excludedId);
+        const response = await blogRepository.getLinkingBlogs(excludedBlogName);
         return response;
     } catch (error) {
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -44,5 +44,5 @@ module.exports = {
     getAllBlogs,
     getLinkingBlogs,
     createBlog,
-    getBlogById,
+    getBlogByName,
 }

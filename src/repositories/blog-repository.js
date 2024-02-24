@@ -8,18 +8,18 @@ class BlogRepository extends CrudRepository {
         super(Blog);
     }
 
-    async getBlogById(blogId) {
+    async getBlogByName(blogName) {
         try {
-            return await this.model.findOne({ "_id": blogId });
+            return await this.model.find({ "heading": blogName });
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
 
-    async getLinkingBlogs(excludedId) {
+    async getLinkingBlogs(excludedBlogName) {
         try {
-            const response = await this.model.find({ "_id": { "$ne": excludedId } }).select('-content').limit(5);
+            const response = await this.model.find({ "heading": { "$ne": excludedBlogName } }).select('-content').limit(5);
             return response;
         } catch (error) {
             console.log(error);
