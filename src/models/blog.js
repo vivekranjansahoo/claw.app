@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const blogSchema = new mongoose.Schema({
-    heading: { type: String, required: true },
-    subHeading: { type: String, required: true },
+    heading: { type: String, required: true, trim: true, unique: true },
+    subHeading: { type: String, required: true, trim: true },
     content: { type: Array, default: [] },
 }, { timestamps: true });
 
