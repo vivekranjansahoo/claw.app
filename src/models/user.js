@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const { SALT_ROUNDS } = require('../config/server-config')
 
 const userSchema = new mongoose.Schema({
     firstName: { type: String },
@@ -19,7 +17,8 @@ const userSchema = new mongoose.Schema({
     about: { type: String },
     phoneNumber: { type: String, required: true, unique: true },
     verified: { type: Boolean, default: false },
-    registered: { type: Boolean, default: false }
+    registered: { type: Boolean, default: false },
+    searchTagEmbedding: { type: Array, select: false },
 }, { timestamps: true });
 
 // userSchema.pre('save', function (next) {

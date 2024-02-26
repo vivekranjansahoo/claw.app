@@ -95,6 +95,16 @@ async function getAllLawyers(req, res) {
     }
 }
 
+async function getLawyerByPhoneNumber(req, res) {
+    try {
+        const { phoneNumber } = req.params;
+        const lawyer = await UserService.getUserByPhoneNumber(phoneNumber);
+        return res.status(StatusCodes.OK).json(SuccessResponse(lawyer));
+    } catch (error) {
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
+
 async function updateUser(req, res) {
     try {
         const { user, ...data } = req.body;
@@ -121,5 +131,6 @@ module.exports = {
     authMe,
     verify,
     getAllLawyers,
+    getLawyerByPhoneNumber,
     updateUser
 }

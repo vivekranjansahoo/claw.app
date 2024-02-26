@@ -28,6 +28,7 @@ router.post(
 
 router.get('/auth/me', authMiddleware.checkUserAuth, UserController.authMe);
 router.get('/list', UserController.getAllLawyers);
+router.get('/list/:phoneNumber', authMiddleware.checkClientAuth, UserController.getLawyerByPhoneNumber);
 
 router.post('/login', validateRequestMiddleware.validateLoginRequest, UserController.signin);
 router.post('/verify', validateRequestMiddleware.validateLawyerVerifyRequest, UserController.verify);
