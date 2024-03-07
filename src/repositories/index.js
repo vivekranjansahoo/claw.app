@@ -7,4 +7,5 @@ module.exports = {
     GigRepository: require('./gig-repository'),
     NewsRespository: require('./news-repository'),
     BlogRepository: require('./blog-repository'),
+    MailingListRespository: require('./mailingList-repository'),
 }

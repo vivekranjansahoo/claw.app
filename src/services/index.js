@@ -5,4 +5,5 @@ module.exports = {
     GigService: require('./gig-service'),
     LeadService: require('./lead-service'),
     BlogService: require('./blog-service'),
+    MailingListService: require('./mailingList-service'),
 }
