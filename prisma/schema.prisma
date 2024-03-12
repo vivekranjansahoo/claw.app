@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPABASE_DATABASE_URL")
+  directUrl = env("SUPABASE_DIRECT_URL")
+}
+
+model Plan {
+  name String @id @unique
+  price Int
+  token Int
+  users User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model User {
+  mongoId String @id
+  phoneNumber String @unique @db.VarChar(10)
+
+  planName String @default("free")
+  plan Plan @relation(fields:[planName],references: [name])
+  
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model Model {
+  name String @id
+  version Float
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id String @id @default(uuid())
+  name String
+  userId String
+  user User @relation(fields: [userId], references: [mongoId], onDelete: Cascade)
+  messages Message[]
+
+  modelName String
+  model Model @relation(fields: [modelName], references: [name])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Message {
+  id String @id @default(uuid())
+  text String 
+  isUser Boolean
+  
+  feedback Feedback?
+
+  sessionId String
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+}
+
+model Feedback {
+  id String @id @default(uuid())
+  rating Int
+  text String
+
+  messageId String @unique
+  message Message @relation(fields: [messageId], references: [id])
+
+  createdAt DateTime @default(now())
+}
