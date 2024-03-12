@@ -3,8 +3,10 @@ const { fetchGptUser, createGptUser, createModel, createPlan } = require("../ser
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes');
 
+const { FLASK_API_ENDPOINT } = process.env;
+
 async function fetchGptApi(body) {
-    const response = await fetch("http://localhost:5000/api/v1/gpt/generate", {
+    const response = await fetch(`${FLASK_API_ENDPOINT}/gpt/generate`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

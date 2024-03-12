@@ -94,6 +94,7 @@ async function createPlan(name, price, token) {
 
 async function createMessage(sessionId, prompt, isUser) {
     try {
+        console.log(sessionId, prompt);
         const newMessage = await prisma.message.create({
             data: {
                 sessionId,
