@@ -7,4 +7,5 @@ module.exports = {
     LegalGPTController: require('./legalgpt-controller'),
     BlogController: require("./blog-controller"),
     MailingListController: require("./mailingList-controller"),
+    GptController: require('./gpt-controller'),
 }

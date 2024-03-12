@@ -6,4 +6,5 @@ module.exports = {
     LeadService: require('./lead-service'),
     BlogService: require('./blog-service'),
     MailingListService: require('./mailingList-service'),
+    GptServices: require('./gpt-service'),
 }

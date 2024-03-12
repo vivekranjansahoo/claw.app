@@ -18,8 +18,8 @@ async function registerUser(req, res) {
         data.registered = true;
         const updatedUser = await UserService.updateUserByPhoneNumber(phoneNumber, data);
 
-        const jwt = createToken({ id: updatedUser.id, phoneNumber: updatedUser.phoneNumber });
-        const successResponse = SuccessResponse({ jwt });
+        const { jwt, expiresAt } = createToken({ id: updatedUser.id, phoneNumber: updatedUser.phoneNumber });
+        const successResponse = SuccessResponse({ jwt, expiresAt });
         return res
             .status(StatusCodes.OK)
             .json(successResponse)
@@ -43,7 +43,12 @@ async function verify(req, res) {
         const { verified } = req.body;
         await UserService.updateUserByPhoneNumber(req.body.phoneNumber, { verified });
         const successResponse = SuccessResponse({ newUser: false, registered: existing.registered, verified: verified })
-        if (existing.registered) successResponse.data.jwt = createToken({ id: existing.id, phoneNumber: existing.phoneNumber });
+
+        if (existing.registered) {
+            const { jwt, expiresAt } = createToken({ id: existing.id, phoneNumber: existing.phoneNumber });
+            successResponse.data.jwt = jwt;
+            successResponse.data.expiresAt = expiresAt;
+        }
         return res.status(StatusCodes.OK).json(successResponse);
     } catch (error) {
         return res.status(error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));

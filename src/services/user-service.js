@@ -9,7 +9,7 @@ const userRepository = new UserRepository();
 async function createUser(data) {
     try {
         const user = await userRepository.create(data);
-        const jwt = createToken({ id: user.id, email: user.email });
+        const { jwt } = createToken({ id: user.id, email: user.email });
         return {
             user,
             jwt,
@@ -64,7 +64,7 @@ async function signin(data) {
         if (!passwordMatch) {
             throw new AppError('Password do not match', StatusCodes.BAD_REQUEST);
         }
-        const jwt = createToken({ id: user.id, email: user.email });
+        const {jwt} = createToken({ id: user.id, email: user.email });
 
         return {
             jwt: jwt

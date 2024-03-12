@@ -5,6 +5,8 @@ const path = require("path");
 const { uploadFile } = require('../services/s3-service');
 const { AWS_S3_BUCKET_NAME, AWS_REGION } = require('../config/server-config');
 const { createToken } = require('../utils/common/auth');
+const prisma = require('../config/prisma-client');
+const { fetchGptUser } = require('../services/gpt-service');
 
 
 /**
@@ -83,18 +85,22 @@ async function verify(req, res) {
         const { phoneNumber, verified } = req.body;
         const existing = await ClientService.getClientByPhoneNumber(phoneNumber);
         if (!existing) {
-            const { client, jwt } = await ClientService.createClient({
+            const { client, jwt, expiresAt } = await ClientService.createClient({
                 phoneNumber,
                 verified
             });
-            const data = { verified: client.verified, newClient: true };
-            if (verified) data.jwt = jwt;
+            const data = { verified: client.verified, newClient: true, newGptUser: true };
+            if (verified) {
+                data.jwt = jwt;
+                data.expiresAt = expiresAt;
+            }
             const successResponse = SuccessResponse(data);
-            res.status(StatusCodes.CREATED).json(successResponse);
+            return res.status(StatusCodes.CREATED).json(successResponse);
         }
         const updatedClient = await ClientService.updateClient(existing.id, { verified });
-        const jwt = createToken({ id: updatedClient.id, phoneNumber })
-        const successResponse = SuccessResponse({ newClient: false, verified: verified, jwt });
+        const { jwt, expiresAt } = createToken({ id: updatedClient.id, phoneNumber });
+        const existingGptUser = await fetchGptUser(existing.id);
+        const successResponse = SuccessResponse({ newClient: false, verified: verified, jwt, expiresAt, newGptUser: existingGptUser ? false : true });
         return res
             .status(StatusCodes.OK)
             .json(successResponse)

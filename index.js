@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
+require('./src/config/prisma-client');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -9,10 +9,11 @@ const clientRepository = new ClientRepository();
 async function createClient(data) {
     try {
         const client = await clientRepository.create(data);
-        const jwt = createToken({ id: client.id, phoneNumber: client.phoneNumber });
+        const { jwt, expiresAt } = createToken({ id: client.id, phoneNumber: client.phoneNumber });
         return {
             client,
-            jwt
+            jwt,
+            expiresAt
         };
     }
     catch (error) {
@@ -34,7 +35,7 @@ async function signin(data) {
         if (!passwordMatch) {
             throw new AppError('Password do not match', StatusCodes.BAD_REQUEST);
         }
-        const jwt = createToken({ id: client.id, email: client.email });
+        const { jwt } = createToken({ id: client.id, email: client.email });
         return {
             jwt: jwt
         };
