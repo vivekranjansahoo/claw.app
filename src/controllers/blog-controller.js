@@ -35,8 +35,8 @@ async function getLinkingBlogs(req, res) {
 
 async function createBlogs(req, res) {
     try {
-        const { heading, subHeading, content } = req.body;
-        const newBlog = await BlogService.createBlog({ heading, subHeading, content });
+        const { heading, subHeading, content, html } = req.body;
+        const newBlog = await BlogService.createBlog({ heading, subHeading, content,html });
         return res.status(StatusCodes.CREATED).json(SuccessResponse(newBlog));
     } catch (error) {
         res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
