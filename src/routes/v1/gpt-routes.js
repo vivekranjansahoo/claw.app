@@ -14,7 +14,7 @@ const router = express.Router();
 
 // routes to create/manage sessions
 router.get('/session/:sessionId', authMiddleware.checkClientAuth, GptController.getSessionMessages);
-router.get('/sessions', authMiddleware.checkClientAuth, GptController.getUserSessions);
+router.get('/sessions/:model', authMiddleware.checkClientAuth, GptController.getUserSessions);
 router.post('/user', authMiddleware.checkClientAuth, GptController.initGptUser);
 
 router.post('/createModel', GptController.createGptModel);

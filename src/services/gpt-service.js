@@ -123,11 +123,29 @@ async function fetchGptUser(mongoId) {
     }
 }
 
-async function fetchSessions(userId) {
+async function fetchSessionBySessionId(sessionId) {
+    try {
+        const session = await prisma.session.findUnique({
+            where: {
+                id: sessionId,
+            },
+            select: {
+                modelName: true,
+            },
+        })
+        return session;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Error fetching session by sessionId", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function fetchSessions(userId, model) {
     try {
         const userSessions = await prisma.session.findMany({
             where: {
-                userId
+                userId,
+                modelName: model,
             },
             orderBy: {
                 updatedAt: "desc"
@@ -185,4 +203,5 @@ module.exports = {
     fetchSessionMessages,
     fetchContext,
     fetchGptUser,
+    fetchSessionBySessionId,
 }

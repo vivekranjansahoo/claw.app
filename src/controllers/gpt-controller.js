@@ -2,6 +2,7 @@ const { GptServices } = require("../services");
 const { fetchGptUser, createGptUser, createModel, createPlan } = require("../services/gpt-service");
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes');
+const AppError = require("../utils/errors/app-error");
 
 const { FLASK_API_ENDPOINT } = process.env;
 
@@ -60,6 +61,9 @@ async function appendMessage(req, res) {
     try {
         const { prompt, sessionId } = req.body;
 
+        const { modelName } = await GptServices.fetchSessionBySessionId(sessionId);
+        if (!modelName) throw new AppError("Invalid sessionId", StatusCodes.BAD_REQUEST);
+
         // Fetch Context
         const context = await GptServices.fetchContext(sessionId);
 
@@ -67,6 +71,7 @@ async function appendMessage(req, res) {
         await GptServices.createMessage(sessionId, prompt, true);
 
         // Make a call to gpt for generating response
+        console.log("called by mode", modelName);
         const gptApiResponse = await fetchGptApi({ prompt, context });
 
         // Save Gpt Response
@@ -82,9 +87,10 @@ async function appendMessage(req, res) {
 
 async function getUserSessions(req, res) {
     try {
+        const { model } = req.params;
         const { _id } = req.body.client;
         const userId = _id.toString();
-        const sessions = await GptServices.fetchSessions(userId);
+        const sessions = await GptServices.fetchSessions(userId, model);
 
         return res.status(StatusCodes.OK).json(SuccessResponse(sessions));
     } catch (error) {
