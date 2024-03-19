@@ -117,6 +117,7 @@ async function register(req, res) {
         const { phoneNumber, ...rest } = req.body;
         const client = await ClientService.getClientByPhoneNumber(phoneNumber);
         if (!client) return res.status(StatusCodes.NOT_FOUND).json(ErrorResponse({}, { message: "Invalid phone number" }));
+        if (!client.verified) return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse({}, { message: "Client not verified" }));
         if (client.registered) return res.status(StatusCodes.BAD_GATEWAY).json(ErrorResponse({}, { message: "Client already registered" }));
         const updatedClient = await ClientService.updateClient(client.id, { ...rest, registered: true });
         return res.status(StatusCodes.OK).json(SuccessResponse(updatedClient));
