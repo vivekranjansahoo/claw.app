@@ -6,6 +6,7 @@ const lawyerVerifySchema = require('../schema/lawyerVerifySchema');
 const lawyerUpdateSchema = require("../schema/lawyerUpdateSchema");
 const clientVerifySchema = require('../schema/clientVerifySchema');
 const clientUpdateSchema = require("../schema/clientUpdateSchema");
+const clientRegisterSchema = require("../schema/clientRegisterSchema");
 const AppError = require('../utils/errors/app-error');
 const { ErrorResponse } = require('../utils/common');
 
@@ -49,7 +50,7 @@ async function validateLawyerVerifyRequest(req, res, next) {
         next();
     } catch (error) {
         console.log(error);
-        res.status(StatusCodes.BAD_REQUEST).send(error);
+        res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse({}, error));
     }
 }
 
@@ -66,7 +67,17 @@ async function validateLawyerRegisterRequest(req, res, next) {
     }
     catch (error) {
         console.log(error)
-        res.status(StatusCodes.BAD_REQUEST).send(error);
+        res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse({}, error));
+    }
+}
+
+async function validateClientRegisterRequest(req, res, next) {
+    try {
+        await clientRegisterSchema.validateAsync(req.body);
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse({}, error));
     }
 }
 
@@ -168,5 +179,6 @@ module.exports = {
     validateLawyerUpdateRequest,
     validateLawyerVerifyRequest,
     validateClientVerifyRequest,
-    validateClientUpdateRequest
+    validateClientUpdateRequest,
+    validateClientRegisterRequest,
 }

@@ -21,6 +21,7 @@ const upload = multer({
 
 router.post('/signup', validateRequestMiddleware.validateSignUpRequest, ClientController.createClient);
 router.post('/login', validateRequestMiddleware.validateLoginRequest, ClientController.signin);
+router.post('/register', validateRequestMiddleware.validateClientRegisterRequest, ClientController.register);
 
 router.get('/auth/me', authMiddleware.checkClientAuth, ClientController.authMe);
 router.get('/list', ClientController.getAllClients);

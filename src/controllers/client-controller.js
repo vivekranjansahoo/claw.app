@@ -89,7 +89,7 @@ async function verify(req, res) {
                 phoneNumber,
                 verified
             });
-            const data = { verified: client.verified, newClient: true, newGptUser: true };
+            const data = { verified: client.verified, register: false, newGptUser: true };
             if (verified) {
                 data.jwt = jwt;
                 data.expiresAt = expiresAt;
@@ -100,7 +100,7 @@ async function verify(req, res) {
         const updatedClient = await ClientService.updateClient(existing.id, { verified });
         const { jwt, expiresAt } = createToken({ id: updatedClient.id, phoneNumber });
         const existingGptUser = await fetchGptUser(existing.id);
-        const successResponse = SuccessResponse({ newClient: false, verified: verified, jwt, expiresAt, newGptUser: existingGptUser ? false : true });
+        const successResponse = SuccessResponse({ newClient: false, verified: verified, registered: updatedClient.registered, jwt, expiresAt, newGptUser: existingGptUser ? false : true });
         return res
             .status(StatusCodes.OK)
             .json(successResponse)
@@ -112,6 +112,18 @@ async function verify(req, res) {
     }
 }
 
+async function register(req, res) {
+    try {
+        const { phoneNumber, ...rest } = req.body;
+        const client = await ClientService.getClientByPhoneNumber(phoneNumber);
+        if (!client) return res.status(StatusCodes.NOT_FOUND).json(ErrorResponse({}, { message: "Invalid phone number" }));
+        if (client.registered) return res.status(StatusCodes.BAD_GATEWAY).json(ErrorResponse({}, { message: "Client already registered" }));
+        const updatedClient = await ClientService.updateClient(client.id, { ...rest, registered: true });
+        return res.status(StatusCodes.OK).json(SuccessResponse(updatedClient));
+    } catch (error) {
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
 
 async function getAllClients(req, res) {
     try {
@@ -152,5 +164,6 @@ module.exports = {
     authMe,
     getAllClients,
     verify,
-    updateClient
+    updateClient,
+    register,
 }
