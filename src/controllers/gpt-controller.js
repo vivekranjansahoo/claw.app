@@ -1,5 +1,4 @@
 const { GptServices } = require("../services");
-const { fetchGptUser, createGptUser, createModel, createPlan } = require("../services/gpt-service");
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes');
 const AppError = require("../utils/errors/app-error");
@@ -32,7 +31,7 @@ async function generateGptResponse(req, res) {
 async function initGptUser(req, res) {
     try {
         const { _id, phoneNumber } = req.body.client;
-        const newUser = await createGptUser(phoneNumber, _id.toString());
+        const newUser = await GptServices.createGptUser(phoneNumber, _id.toString());
         return res.status(StatusCodes.CREATED).json(SuccessResponse(newUser));
 
     } catch (error) {
@@ -61,14 +60,14 @@ async function appendMessage(req, res) {
     try {
         const { prompt, sessionId } = req.body;
 
-        const { modelName } = await GptServices.fetchSessionBySessionId(sessionId);
+        const { modelName, user } = await GptServices.fetchSessionBySessionId(sessionId);
         if (!modelName) throw new AppError("Invalid sessionId", StatusCodes.BAD_REQUEST);
 
         // Fetch Context
         const context = await GptServices.fetchContext(sessionId);
 
         // Save User Prompt
-        await GptServices.createMessage(sessionId, prompt, true);
+        const { token } = await GptServices.createMessage(sessionId, prompt, true, user.mongoId);
 
         // Make a call to gpt for generating response
         console.log("called by mode", modelName);
@@ -77,7 +76,7 @@ async function appendMessage(req, res) {
         // Save Gpt Response
         const gptResponse = await GptServices.createMessage(sessionId, gptApiResponse.gptResponse, false);
 
-        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse }));
+        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse, token }));
 
     } catch (error) {
         console.log(error);
@@ -114,7 +113,7 @@ async function getSessionMessages(req, res) {
 async function createGptModel(req, res) {
     try {
         const { name, version } = req.body;
-        const response = await createModel(name, parseFloat(version));
+        const response = await GptServices.createModel(name, parseFloat(version));
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);
@@ -124,11 +123,40 @@ async function createGptModel(req, res) {
 async function createGptPlan(req, res) {
     try {
         const { name, price, token } = req.body;
-        const response = await createPlan(name, parseInt(price), parseInt(token));
+        const response = await GptServices.createPlan(name, parseInt(price), parseInt(token));
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);
         res.status(error.statusCode, ErrorResponse({}, error));
+    }
+}
+
+async function createReferralCode(req, res) {
+    try {
+        const { _id } = req.body.client;
+
+    } catch (error) {
+
+    }
+}
+
+async function redeemReferralCode(req, res) {
+    try {
+
+    } catch (error) {
+
+    }
+}
+
+async function fetchGptUser(req, res) {
+    try {
+        const { _id } = req.body.client;
+        if (!_id) return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse({}, { message: "Missing jwt for user authorization" }));
+        const gptUser = await GptServices.fetchGptUser(_id);
+        return res.status(StatusCodes.OK).json(SuccessResponse(gptUser));
+    } catch (error) {
+        console.log(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -141,4 +169,7 @@ module.exports = {
     initGptUser,
     createGptModel,
     createGptPlan,
+    createReferralCode,
+    redeemReferralCode,
+    fetchGptUser,
 }

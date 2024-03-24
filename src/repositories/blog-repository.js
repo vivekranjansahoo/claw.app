@@ -26,6 +26,16 @@ class BlogRepository extends CrudRepository {
             throw error;
         }
     }
+
+    async getPaginatedBlogs(limit, page) {
+        try {
+            const response = await this.model.find({}).select('heading subHeading createdAt').limit(limit).skip((page - 1) * limit).sort({ createdAt: -1 });
+            return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = BlogRepository;

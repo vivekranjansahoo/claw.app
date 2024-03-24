@@ -14,6 +14,22 @@ datasource db {
   directUrl = env("SUPABASE_DIRECT_URL")
 }
 
+
+model ReferralCode{
+  id String @id @default(uuid())
+
+  redeemed Boolean @default(false)
+
+  redeemedById String?
+  redeemedBy User? @relation("RedeemedByUser", fields: [redeemedById],references: [mongoId])
+
+  generatedById String
+  generatedBy User @relation("GeneratedByUser",fields: [generatedById],references: [mongoId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Plan {
   name String @id @unique
   price Int
@@ -32,6 +48,10 @@ model User {
   planName String @default("free")
   plan Plan @relation(fields:[planName],references: [name])
   
+  generatedReferralCodes ReferralCode[] @relation("GeneratedByUser")
+  redeemedReferralCode ReferralCode[] @relation("RedeemedByUser")
+
+  tokenUsed Int @default(0)
   sessions Session[]
 
   createdAt DateTime @default(now())

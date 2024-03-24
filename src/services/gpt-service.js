@@ -92,17 +92,47 @@ async function createPlan(name, price, token) {
     }
 }
 
-async function createMessage(sessionId, prompt, isUser) {
+async function createMessage(sessionId, prompt, isUser, mongoId) {
     try {
         console.log(sessionId, prompt);
-        const newMessage = await prisma.message.create({
-            data: {
-                sessionId,
-                text: prompt,
-                isUser,
-            }
-        })
-        return { messageId: newMessage.id, message: newMessage.text };
+        if (isUser) {
+            return await prisma.$transaction(async (tx) => {
+                const sender = await tx.user.update({
+                    where: {
+                        mongoId
+                    },
+                    data: {
+                        tokenUsed: {
+                            increment: 1
+                        }
+                    },
+                    include: {
+                        plan: { select: { token: true } }
+                    }
+                });
+
+                if (sender.tokenUsed > sender.plan.token) throw new Error("User does not have enough tokens");
+
+                const newMessage = await prisma.message.create({
+                    data: {
+                        sessionId,
+                        text: prompt,
+                        isUser,
+                    },
+                });
+                return { messageId: newMessage.id, message: newMessage.text, token: { used: sender.tokenUsed, total: sender.plan.token } };
+            })
+        }
+        else {
+            const newMessage = await prisma.message.create({
+                data: {
+                    sessionId,
+                    text: prompt,
+                    isUser,
+                }
+            })
+            return { messageId: newMessage.id, message: newMessage.text };
+        }
     } catch (error) {
         console.log(error);
         throw new AppError("Error while creating new message", StatusCodes.INTERNAL_SERVER_ERROR);
@@ -114,9 +144,16 @@ async function fetchGptUser(mongoId) {
         const user = await prisma.user.findUnique({
             where: {
                 mongoId
+            },
+            include: {
+                plan: {
+                    select: {
+                        token: true
+                    }
+                }
             }
         });
-        return user;
+        return { createdAt: user.createdAt, phoneNumber: user.phoneNumber, plan: user.planName, token: { used: user.tokenUsed, total: user.plan.token } };
     } catch (error) {
         console.log(error);
         throw new AppError("Error while fetching user", StatusCodes.INTERNAL_SERVER_ERROR);
@@ -131,6 +168,11 @@ async function fetchSessionBySessionId(sessionId) {
             },
             select: {
                 modelName: true,
+                user: {
+                    select: {
+                        mongoId: true
+                    }
+                }
             },
         })
         return session;
@@ -192,6 +234,49 @@ async function fetchSessionMessages(sessionId) {
     }
 }
 
+async function createReferralCode(mongoId) {
+    try {
+        const existingCodeCount = await prisma.referralCode.count({
+            where: {
+                generatedById: mongoId
+            }
+        });
+
+        if (existingCodeCount >= 5) throw new Error("Cannot generate more than 5 referral codes");
+
+        const newReferralCode = await prisma.referralCode.create({
+            data: {
+                generatedById: mongoId,
+            }
+        });
+
+        return newReferralCode;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Error while generating new referral code", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+async function redeemReferralCode(referralCode, redeemedById) {
+    try {
+        const redeemedReferralCode = await prisma.referralCode.update({
+            where: {
+                id: referralCode,
+                redeemed: false,
+            },
+            data: {
+                redeemedById,
+                redeemed: true,
+            }
+        });
+
+        return redeemedReferralCode;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Error while redeeming referral code", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 
 module.exports = {
     createMessage,
@@ -204,4 +289,6 @@ module.exports = {
     fetchContext,
     fetchGptUser,
     fetchSessionBySessionId,
+    createReferralCode,
+    redeemReferralCode,
 }

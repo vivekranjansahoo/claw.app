@@ -4,9 +4,9 @@ const { StatusCodes } = require('http-status-codes');
 
 const blogRepository = new BlogRepository();
 
-async function getAllBlogs() {
+async function getAllBlogs(limit, page) {
     try {
-        const response = await blogRepository.get();
+        const response = await blogRepository.getPaginatedBlogs(limit, page);
         return response;
     } catch (error) {
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -39,6 +39,7 @@ async function createBlog(data) {
         throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
+
 
 module.exports = {
     getAllBlogs,
