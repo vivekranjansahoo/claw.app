@@ -20,10 +20,9 @@ model ReferralCode{
 
   redeemed Boolean @default(false)
 
-  redeemedById String?
-  redeemedBy User? @relation("RedeemedByUser", fields: [redeemedById],references: [mongoId])
+  redeemedBy User[] @relation("RedeemedByUser")
 
-  generatedById String
+  generatedById String @unique
   generatedBy User @relation("GeneratedByUser",fields: [generatedById],references: [mongoId])
 
   createdAt DateTime @default(now())
@@ -34,6 +33,7 @@ model Plan {
   name String @id @unique
   price Int
   token Int
+  adToken Int @default(0)
   users User[]
 
   createdAt DateTime @default(now())
@@ -48,8 +48,11 @@ model User {
   planName String @default("free")
   plan Plan @relation(fields:[planName],references: [name])
   
-  generatedReferralCodes ReferralCode[] @relation("GeneratedByUser")
-  redeemedReferralCode ReferralCode[] @relation("RedeemedByUser")
+  generatedReferralCodeId String?
+  generatedReferralCode ReferralCode? @relation("GeneratedByUser")
+  
+  redeemedReferralCodeId String?
+  redeemedReferralCode ReferralCode? @relation("RedeemedByUser", fields: [redeemedReferralCodeId], references: [id])
 
   tokenUsed Int @default(0)
   sessions Session[]
