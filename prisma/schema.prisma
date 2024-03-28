@@ -16,7 +16,7 @@ datasource db {
 
 
 model ReferralCode{
-  id String @id @default(uuid())
+  id String @id @default(cuid())
 
   redeemed Boolean @default(false)
 
@@ -107,7 +107,6 @@ model Message {
 model Feedback {
   id String @id @default(uuid())
   rating Int
-  text String
 
   messageId String @unique
   message Message @relation(fields: [messageId], references: [id])

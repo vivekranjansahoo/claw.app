@@ -76,7 +76,7 @@ async function appendMessage(req, res) {
         // Save Gpt Response
         const gptResponse = await GptServices.createMessage(sessionId, gptApiResponse.gptResponse, false);
 
-        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse, token }));
+        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse, token, relatedCases: gptApiResponse.relatedCases }));
 
     } catch (error) {
         console.log(error);
