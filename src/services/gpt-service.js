@@ -75,14 +75,13 @@ async function createSession(userId, initialPrompt, modelName) {
     }
 }
 
-async function createPlan(name, price, token, adToken) {
+async function createPlan(name, price, token) {
     try {
         const newPlan = await prisma.plan.create({
             data: {
                 name,
                 price,
                 token,
-                adToken,
             }
         });
 
@@ -108,11 +107,11 @@ async function createMessage(sessionId, prompt, isUser, mongoId) {
                         }
                     },
                     include: {
-                        plan: { select: { token: true, adToken: true } }
+                        plan: { select: { token: true } }
                     }
                 });
 
-                if (sender.tokenUsed > (sender.plan.token + sender.plan.adToken)) throw new Error("User does not have enough tokens");
+                if (sender.tokenUsed > sender.plan.token) throw new Error("User does not have enough tokens");
 
                 const newMessage = await prisma.message.create({
                     data: {
@@ -121,7 +120,7 @@ async function createMessage(sessionId, prompt, isUser, mongoId) {
                         isUser,
                     },
                 });
-                return { messageId: newMessage.id, message: newMessage.text, token: { used: sender.tokenUsed, total: { withoutAds: sender.plan.token, withAds: sender.plan.adToken } } };
+                return { messageId: newMessage.id, message: newMessage.text, token: { used: sender.tokenUsed, total: sender.plan.token } };
             })
         }
         else {
@@ -150,12 +149,11 @@ async function fetchGptUser(mongoId) {
                 plan: {
                     select: {
                         token: true,
-                        adToken: true,
                     }
                 }
             }
         });
-        return { createdAt: user.createdAt, phoneNumber: user.phoneNumber, plan: user.planName, token: { used: user.tokenUsed, total: { withoutAds: user.plan.token, withAds: user.plan.adToken } } };
+        return { createdAt: user.createdAt, phoneNumber: user.phoneNumber, plan: user.planName, token: { used: user.tokenUsed, total: user.plan.token } };
     } catch (error) {
         console.log(error);
         throw new AppError("Error while fetching user", StatusCodes.INTERNAL_SERVER_ERROR);

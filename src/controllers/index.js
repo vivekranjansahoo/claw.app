@@ -8,4 +8,5 @@ module.exports = {
     BlogController: require("./blog-controller"),
     MailingListController: require("./mailingList-controller"),
     GptController: require('./gpt-controller'),
+    CaseFinderController: require('./caseFinder-controller'),
 }

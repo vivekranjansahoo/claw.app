@@ -8,6 +8,7 @@ const LeadRoutes = require('./lead-routes');
 const BaseRoutes = require('./base-routes');
 const BlogsRoutes = require('./blog-routes');
 const MailingListRoutes = require('./mailingList-routes');
+const CaseFinderRoutes = require('./case-routes');
 const router = express.Router();
 
 router.use('/user', UserRoutes);
@@ -19,5 +20,6 @@ router.use('/gig', GigRoutes);
 router.use('/gpt', GptRoutes);
 router.use('/blog', BlogsRoutes);
 router.use('/mailinglist', MailingListRoutes);
+router.use('/case', CaseFinderRoutes);
 
 module.exports = router;

@@ -80,7 +80,7 @@ async function appendMessage(req, res) {
 
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode, ErrorResponse({}, error));
+        res.status(error.statusCode).json(ErrorResponse({}, error));
     }
 }
 
@@ -122,8 +122,8 @@ async function createGptModel(req, res) {
 }
 async function createGptPlan(req, res) {
     try {
-        const { name, price, token, adToken } = req.body;
-        const response = await GptServices.createPlan(name, parseInt(price), parseInt(token), parseInt(adToken));
+        const { name, price, token } = req.body;
+        const response = await GptServices.createPlan(name, parseInt(price), parseInt(token));
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);

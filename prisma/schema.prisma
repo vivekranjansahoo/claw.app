@@ -33,7 +33,6 @@ model Plan {
   name String @id @unique
   price Int
   token Int
-  adToken Int @default(0)
   users User[]
 
   createdAt DateTime @default(now())
