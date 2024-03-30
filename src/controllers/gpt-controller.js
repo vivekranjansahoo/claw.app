@@ -205,6 +205,35 @@ async function fetchCaseDetails(req, res) {
     }
 }
 
+async function fetchGptCaseQuery(body) {
+    try {
+        const response = await fetch(`${FLASK_API_ENDPOINT}/search/case`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+        const parsed = await response.json();
+        return parsed;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Failed to make api request to gpt.claw", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function queryCase(req, res) {
+    try {
+        const { startDate = '01/01/1980', endDate = '01/01/2024', query = "", courtName = 'Supreme Court of India' } = req.body;
+        if (!query) throw new AppError("Invalid query", StatusCodes.BAD_REQUEST);
+        const response = await fetchGptCaseQuery({ startDate, endDate, query, courtName });
+        return res.status(StatusCodes.OK).json(SuccessResponse(response));
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
+
 module.exports = {
     startSession,
     getUserSessions,
@@ -219,4 +248,5 @@ module.exports = {
     fetchGptUser,
     fetchAmbassadorDetails,
     fetchCaseDetails,
+    queryCase,
 }
