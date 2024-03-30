@@ -260,21 +260,56 @@ async function createReferralCode(mongoId) {
 
 async function redeemReferralCode(referralCode, redeemedById) {
     try {
-        const redeemedReferralCode = await prisma.referralCode.update({
+        const updatedUser = await prisma.user.update({
             where: {
-                id: referralCode,
-                redeemed: false,
+                mongoId: redeemedById,
+                planName: 'free'
             },
             data: {
-                redeemedById,
-                redeemed: true,
+                planName: 'referred',
+                tokenUsed: 0,
+                redeemedReferralCodeId: referralCode,
+            },
+            select: {
+                plan: {
+                    select: {
+                        token: true
+                    }
+                },
+                planName: true,
+                tokenUsed: true,
             }
         });
 
-        return redeemedReferralCode;
+        return { token: { used: updatedUser.tokenUsed, total: updatedUser.plan.token } }
     } catch (error) {
         console.log(error);
         throw new AppError("Error while redeeming referral code", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function fetchReferralDetails(mongoId) {
+    try {
+        const response = await prisma.user.findUnique({
+            where: {
+                mongoId
+            },
+            select: {
+                generatedReferralCode: true
+            }
+        });
+        if (response.generatedReferralCode) {
+            const redeemCount = await prisma.user.count({ where: { redeemedReferralCodeId: response.generatedReferralCode?.id } });
+
+            return { referralCode: response.generatedReferralCode, redeemCount };
+        }
+        else {
+            return { referralCode: null, redeemCount: null };
+        }
+
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Error while fetching referral details", StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
@@ -291,4 +326,5 @@ module.exports = {
     fetchSessionBySessionId,
     createReferralCode,
     redeemReferralCode,
+    fetchReferralDetails,
 }

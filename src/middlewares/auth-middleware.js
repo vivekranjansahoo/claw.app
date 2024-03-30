@@ -67,10 +67,17 @@ async function checkRegisteredLawyer(req, res, next) {
     }
 }
 
+async function checkAmabassador(req, res, next) {
+    const ambassador = req.body?.client?.ambassador;
+    if (!ambassador) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "User not an ambassador" });
+    return next();
+}
+
 
 module.exports = {
     checkUserAuth,
     checkClientAuth,
     checkVerifiedLawyer,
     checkRegisteredLawyer,
+    checkAmabassador,
 }

@@ -134,19 +134,37 @@ async function createGptPlan(req, res) {
 async function createReferralCode(req, res) {
     try {
         const { _id } = req.body.client;
-
+        const referralCode = await GptServices.createReferralCode(_id);
+        return res.status(StatusCodes.OK).json(SuccessResponse({ referralCode, redeemCount: 0 }));
     } catch (error) {
-
+        console.log(error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
 async function redeemReferralCode(req, res) {
     try {
-
+        const { _id } = req.body.client;
+        const { referralCode } = req.body;
+        const response = await GptServices.redeemReferralCode(referralCode, _id);
+        return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
-
+        console.log(error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
+async function fetchAmbassadorDetails(req, res) {
+    try {
+        const { _id, firstName, lastName, collegeName } = req.body.client;
+        const response = await GptServices.fetchReferralDetails(_id);
+        return res.status(StatusCodes.OK).json(SuccessResponse({ ...response, client: { firstName, lastName, collegeName } }));
+    } catch (error) {
+        console.log(error);
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
+
+
 
 async function fetchGptUser(req, res) {
     try {
@@ -157,6 +175,33 @@ async function fetchGptUser(req, res) {
     } catch (error) {
         console.log(error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
+
+async function fetchGptCases(id) {
+    try {
+        const response = await fetch(`${FLASK_API_ENDPOINT}/scrape/case/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const parsed = await response.json();
+        return parsed;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Failed to make api request to gpt.claw", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function fetchCaseDetails(req, res) {
+    try {
+        const { caseId } = req.params;
+        const data = await fetchGptCases(caseId);
+        return res.status(StatusCodes.OK).json(SuccessResponse(data));
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -172,4 +217,6 @@ module.exports = {
     createReferralCode,
     redeemReferralCode,
     fetchGptUser,
+    fetchAmbassadorDetails,
+    fetchCaseDetails,
 }

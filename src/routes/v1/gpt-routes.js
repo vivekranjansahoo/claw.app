@@ -13,20 +13,23 @@ const router = express.Router();
 // router.delete('/model')
 
 // routes to create/manage sessions
-router.get('/user', authMiddleware.checkClientAuth, GptController.fetchGptUser);
-router.get('/session/:sessionId', authMiddleware.checkClientAuth, GptController.getSessionMessages);
-router.get('/sessions/:model', authMiddleware.checkClientAuth, GptController.getUserSessions);
-router.post('/user', authMiddleware.checkClientAuth, GptController.initGptUser);
+router.use(authMiddleware.checkClientAuth);
+router.get('/user', GptController.fetchGptUser);
+router.get('/case/:caseId', GptController.fetchCaseDetails);
+router.get('/session/:sessionId', GptController.getSessionMessages);
+router.get('/sessions/:model', GptController.getUserSessions);
+router.post('/user', GptController.initGptUser);
 
 router.post('/createModel', GptController.createGptModel);
 router.post('/createPlan', GptController.createGptPlan);
 
+router.get('/referralCode', authMiddleware.checkAmabassador, GptController.fetchAmbassadorDetails);
 router.post('/referralCode/generate', GptController.createReferralCode);
 router.post('/referralCode/redeem', GptController.redeemReferralCode);
 
 // router.post('/conversation', GptController.generateGptResponse);
-router.post('/session', authMiddleware.checkClientAuth, GptController.startSession);
-router.post('/session/prompt', authMiddleware.checkClientAuth, GptController.appendMessage);
+router.post('/session', GptController.startSession);
+router.post('/session/prompt', GptController.appendMessage);
 
 // router.delete('/session/sessionId');
 
