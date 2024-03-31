@@ -324,6 +324,26 @@ async function fetchReferralDetails(mongoId) {
     }
 }
 
+async function fetchLastMessagePair(sessionId) {
+    try {
+        const lastMessagePair = await prisma.message.findMany({
+            where: { sessionId },
+            take: 2,
+            orderBy: {
+                createdAt: 'desc'
+            },
+            select: {
+                text: true,
+                id: true
+            }
+        });
+        return lastMessagePair;
+    } catch (error) {
+        console.log(error);
+        throw new AppError("Error while fetching message pair", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createMessage,
     createSession,
@@ -339,4 +359,5 @@ module.exports = {
     redeemReferralCode,
     fetchReferralDetails,
     consumeToken,
+    fetchLastMessagePair,
 }

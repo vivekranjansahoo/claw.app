@@ -77,11 +77,42 @@ async function appendMessage(req, res) {
         // Save Gpt Response
         const gptResponse = await GptServices.createMessage(sessionId, gptApiResponse.gptResponse, false);
 
-        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse, token, relatedCases: gptApiResponse.relatedCases }));
+        return res.status(StatusCodes.OK).json(SuccessResponse({ sessionId, gptResponse, token }));
 
     } catch (error) {
         console.log(error);
         res.status(error.statusCode).json(ErrorResponse({}, error));
+    }
+}
+
+async function fetchGptRelatedCases(context) {
+    try {
+        const response = await fetch(`${FLASK_API_ENDPOINT}/search/relatedCases`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ context })
+        });
+        const parsed = await response.json();
+        return parsed;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Failed to make api request to gpt.claw");
+    }
+}
+
+async function getRelatedCases(req, res) {
+    try {
+        const { sessionId } = req.params;
+        const messagePair = await GptServices.fetchLastMessagePair(sessionId);
+        const lastMessageId = messagePair[0].id;
+        const context = messagePair.reduce((acc, curr) => acc = acc + curr.text, '');
+        const relatedCases = await fetchGptRelatedCases(context);
+        return res.status(StatusCodes.OK).json(SuccessResponse({ ...relatedCases, messageId: lastMessageId }));
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -95,7 +126,7 @@ async function getUserSessions(req, res) {
         return res.status(StatusCodes.OK).json(SuccessResponse(sessions));
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode, ErrorResponse({}, error));
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -107,7 +138,7 @@ async function getSessionMessages(req, res) {
         return res.status(StatusCodes.OK).json(SuccessResponse(messages));
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode, ErrorResponse({}, error));
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -118,7 +149,7 @@ async function createGptModel(req, res) {
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode, ErrorResponse({}, error));
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 async function createGptPlan(req, res) {
@@ -128,7 +159,7 @@ async function createGptPlan(req, res) {
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode, ErrorResponse({}, error));
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
@@ -252,4 +283,5 @@ module.exports = {
     fetchAmbassadorDetails,
     fetchCaseDetails,
     queryCase,
+    getRelatedCases,
 }

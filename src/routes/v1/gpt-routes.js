@@ -16,6 +16,7 @@ const router = express.Router();
 router.use(authMiddleware.checkClientAuth);
 router.get('/user', GptController.fetchGptUser);
 router.get('/case/:caseId', GptController.fetchCaseDetails);
+router.get('/case/related/:sessionId', GptController.getRelatedCases);
 router.post('/case/search', GptController.queryCase);
 router.get('/session/:sessionId', GptController.getSessionMessages);
 router.get('/sessions/:model', GptController.getUserSessions);
