@@ -9,6 +9,7 @@ const BaseRoutes = require('./base-routes');
 const BlogsRoutes = require('./blog-routes');
 const MailingListRoutes = require('./mailingList-routes');
 const CaseFinderRoutes = require('./case-routes');
+const StripeRoutes = require('./stripe-routes');
 const router = express.Router();
 
 router.use('/user', UserRoutes);
@@ -21,5 +22,6 @@ router.use('/gpt', GptRoutes);
 router.use('/blog', BlogsRoutes);
 router.use('/mailinglist', MailingListRoutes);
 router.use('/case', CaseFinderRoutes);
+router.use('/stripe', StripeRoutes);
 
 module.exports = router;
