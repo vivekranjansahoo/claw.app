@@ -92,36 +92,47 @@ async function createPlan(name, price, token) {
     }
 }
 
+async function consumeToken(mongoId, count = 1) {
+    try {
+        const sender = await prisma.$transaction(async (tx) => {
+            const sender = await tx.user.update({
+                where: {
+                    mongoId
+                },
+                data: {
+                    tokenUsed: {
+                        increment: count
+                    }
+                },
+                include: {
+                    plan: { select: { token: true } }
+                }
+            });
+
+            if (sender.tokenUsed > sender.plan.token) throw new Error(`User does not have enough tokens, user - ${mongoId}, token to be used - ${count}`);
+            return sender;
+        })
+        return { token: { used: sender.tokenUsed, total: sender.plan.token } };
+    } catch (error) {
+        console.log(error);
+        throw new Error("Error while consuming token");
+    }
+}
+
+
 async function createMessage(sessionId, prompt, isUser, mongoId) {
     try {
         console.log(sessionId, prompt);
         if (isUser) {
-            return await prisma.$transaction(async (tx) => {
-                const sender = await tx.user.update({
-                    where: {
-                        mongoId
-                    },
-                    data: {
-                        tokenUsed: {
-                            increment: 1
-                        }
-                    },
-                    include: {
-                        plan: { select: { token: true } }
-                    }
-                });
-
-                if (sender.tokenUsed > sender.plan.token) throw new Error("User does not have enough tokens");
-
-                const newMessage = await prisma.message.create({
-                    data: {
-                        sessionId,
-                        text: prompt,
-                        isUser,
-                    },
-                });
-                return { messageId: newMessage.id, message: newMessage.text, token: { used: sender.tokenUsed, total: sender.plan.token } };
-            })
+            const updatedTokenVault = await consumeToken(mongoId, 1);
+            const newMessage = await prisma.message.create({
+                data: {
+                    sessionId,
+                    text: prompt,
+                    isUser,
+                },
+            });
+            return { messageId: newMessage.id, message: newMessage.text, ...updatedTokenVault };
         }
         else {
             const newMessage = await prisma.message.create({
@@ -327,4 +338,5 @@ module.exports = {
     createReferralCode,
     redeemReferralCode,
     fetchReferralDetails,
+    consumeToken,
 }

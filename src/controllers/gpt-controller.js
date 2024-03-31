@@ -2,6 +2,7 @@ const { GptServices } = require("../services");
 const { ErrorResponse, SuccessResponse } = require("../utils/common")
 const { StatusCodes } = require('http-status-codes');
 const AppError = require("../utils/errors/app-error");
+const { consumeToken } = require("../services/gpt-service");
 
 const { FLASK_API_ENDPOINT } = process.env;
 
@@ -224,10 +225,12 @@ async function fetchGptCaseQuery(body) {
 
 async function queryCase(req, res) {
     try {
+        const { _id } = req.body.client;
         const { startDate = '01/01/1980', endDate = '01/01/2024', query = "", courtName = 'Supreme Court of India' } = req.body;
         if (!query) throw new AppError("Invalid query", StatusCodes.BAD_REQUEST);
+        const updatedTokenVault = await consumeToken(_id, 1);
         const response = await fetchGptCaseQuery({ startDate, endDate, query, courtName });
-        return res.status(StatusCodes.OK).json(SuccessResponse(response));
+        return res.status(StatusCodes.OK).json(SuccessResponse({ ...response, ...updatedTokenVault }));
     } catch (error) {
         console.log(error);
         res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
