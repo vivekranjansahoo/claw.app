@@ -24,6 +24,7 @@ router.post('/login', validateRequestMiddleware.validateLoginRequest, ClientCont
 router.post('/register', validateRequestMiddleware.validateClientRegisterRequest, ClientController.register);
 
 router.get('/auth/me', authMiddleware.checkClientAuth, ClientController.authMe);
+router.post('/update/bankdetails', authMiddleware.checkClientAuth, ClientController.updateClient);
 router.get('/list', ClientController.getAllClients);
 
 router.post('/verify', validateRequestMiddleware.validateClientVerifyRequest, ClientController.verify);

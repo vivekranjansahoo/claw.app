@@ -12,6 +12,11 @@ const clientSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     registered: { type: Boolean, default: false },
     ambassador: { type: Boolean, default: false },
+    account: {
+        holderName: { type: String, trim: true },
+        number: { type: Number },
+        ifsc: { type: String, trim: true }
+    }
 }, { timestamps: true });
 
 const Client = new mongoose.model('Client', clientSchema);
