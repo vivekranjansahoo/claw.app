@@ -89,7 +89,7 @@ async function verify(req, res) {
                 phoneNumber,
                 verified
             });
-            const data = { verified: client.verified, ambassador: client.ambassador ? true : false, register: false, newGptUser: true };
+            const data = { verified: client.verified, ambassador: client.ambassador ? true : false, registered: false, newGptUser: true, newClient: true };
             if (verified) {
                 data.jwt = jwt;
                 data.expiresAt = expiresAt;

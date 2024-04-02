@@ -39,7 +39,7 @@ async function checkClientAuth(req, res, next) {
         next();
     } catch (error) {
         const errorResponse = ErrorResponse({}, error);
-        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+        return res.status(StatusCodes.UNAUTHORIZED)
             .json(errorResponse)
     }
 }

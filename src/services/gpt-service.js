@@ -164,6 +164,7 @@ async function fetchGptUser(mongoId) {
                 }
             }
         });
+        if (!user) return null;
         return { createdAt: user.createdAt, phoneNumber: user.phoneNumber, plan: user.planName, token: { used: user.tokenUsed, total: user.plan.token } };
     } catch (error) {
         console.log(error);
@@ -277,7 +278,7 @@ async function redeemReferralCode(referralCode, redeemedById) {
                 planName: 'free'
             },
             data: {
-                planName: 'referred',
+                planName: 'student',
                 tokenUsed: 0,
                 redeemedReferralCodeId: referralCode,
             },
