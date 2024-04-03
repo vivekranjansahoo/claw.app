@@ -25,6 +25,7 @@ router.post('/register', validateRequestMiddleware.validateClientRegisterRequest
 
 router.get('/auth/me', authMiddleware.checkClientAuth, ClientController.authMe);
 router.post('/update/bankdetails', authMiddleware.checkClientAuth, authMiddleware.checkAmabassador, ClientController.updateClient);
+router.post('/leaders', authMiddleware.checkClientAuth, ClientController.createLeader)
 router.get('/list', ClientController.getAllClients);
 
 router.post('/verify', validateRequestMiddleware.validateClientVerifyRequest, ClientController.verify);

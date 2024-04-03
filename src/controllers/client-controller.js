@@ -112,6 +112,26 @@ async function verify(req, res) {
     }
 }
 
+async function createLeader(req, res) {
+    try {
+        const { phoneNumber, collegeName, firstName, lastName } = req.body;
+        const existingUser = await ClientService.getClientByPhoneNumber(phoneNumber);
+
+        if (!existingUser) {
+            const newClient = await ClientService.createClient({ phoneNumber, collegeName, firstName, lastName, ambassador: true });
+            return res.status(StatusCodes.CREATED).json(SuccessResponse(newClient));
+        }
+        else {
+            const updatedClient = await ClientService.updateClient(existingUser.id, { collegeName, firstName, lastName, ambassador: true });
+            return res.status(StatusCodes.OK).json(SuccessResponse(updatedClient));
+        }
+    } catch (error) {
+        const errorResponse = ErrorResponse({}, error)
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(errorResponse)
+    }
+}
+
 async function register(req, res) {
     try {
         const { phoneNumber, ...rest } = req.body;
@@ -167,4 +187,5 @@ module.exports = {
     verify,
     updateClient,
     register,
+    createLeader,
 }

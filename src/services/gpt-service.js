@@ -293,7 +293,7 @@ async function redeemReferralCode(referralCode, redeemedById) {
             }
         });
 
-        return { token: { used: updatedUser.tokenUsed, total: updatedUser.plan.token } }
+        return { plan: 'student', token: { used: updatedUser.tokenUsed, total: updatedUser.plan.token } }
     } catch (error) {
         console.log(error);
         throw new AppError("Error while redeeming referral code", StatusCodes.INTERNAL_SERVER_ERROR);
