@@ -7,4 +7,6 @@ module.exports = {
     BlogService: require('./blog-service'),
     MailingListService: require('./mailingList-service'),
     GptServices: require('./gpt-service'),
+    OrderService: require('./order-service'),
+    PaymentService: require('./payment-service'),
 }

@@ -107,7 +107,7 @@ async function getRelatedCases(req, res) {
         const { sessionId } = req.params;
         const messagePair = await GptServices.fetchLastMessagePair(sessionId);
         const lastMessageId = messagePair[0].id;
-        const context = messagePair.reduce((acc, curr) => acc = acc + curr.text, '');
+        const context = messagePair.reduce((acc, curr) => acc = acc + " " + curr.text, '');
         const relatedCases = await fetchGptRelatedCases(context);
         return res.status(StatusCodes.OK).json(SuccessResponse({ ...relatedCases, messageId: lastMessageId }));
     } catch (error) {

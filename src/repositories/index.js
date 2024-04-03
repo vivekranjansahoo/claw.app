@@ -8,4 +8,6 @@ module.exports = {
     NewsRespository: require('./news-repository'),
     BlogRepository: require('./blog-repository'),
     MailingListRespository: require('./mailingList-repository'),
+    PaymentRepository: require('./payment-repository'),
+    OrderRepository: require('./order-repository'),
 }

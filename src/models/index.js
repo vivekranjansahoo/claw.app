@@ -7,4 +7,6 @@ module.exports = {
     News: require('./news'),
     Blog: require('./blog'),
     MailingList: require('./mailingList'),
+    Payment: require('./payment'),
+    Order: require('./order'),
 }

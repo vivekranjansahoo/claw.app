@@ -9,4 +9,5 @@ module.exports = {
     MailingListController: require("./mailingList-controller"),
     GptController: require('./gpt-controller'),
     CaseFinderController: require('./caseFinder-controller'),
+    StripeController: require('./stripe-controller'),
 }

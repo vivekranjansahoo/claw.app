@@ -7,7 +7,15 @@ const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 require('./src/config/prisma-client');
 
-app.use(express.json());
+app.use(express.json({
+    verify: function (req, res, buf) {
+        const url = req.url;
+        console.log(url);
+        if (url === '/api/v1/stripe/webhook') {
+            req.rawBody = buf.toString();
+        }
+    }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors())
