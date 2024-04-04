@@ -13,7 +13,6 @@ const orderSchema = new mongoose.Schema({
     plan: {
         type: String,
         required: true,
-        enum: ['PRO'],
         trim: true,
     },
     request: {

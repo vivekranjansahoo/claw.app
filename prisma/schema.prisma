@@ -31,7 +31,7 @@ model ReferralCode{
 
 model Plan {
   name String @id @unique
-  price Int
+  session Int @default(1)
   token Int
   users User[]
 

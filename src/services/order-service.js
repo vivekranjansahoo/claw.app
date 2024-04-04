@@ -24,8 +24,19 @@ async function updateOrder(id, data) {
     }
 }
 
+async function fetchOrderById(orderId) {
+    try {
+        const order = await orderRepository.getById(orderId);
+        return order;
+    } catch (error) {
+        console.error(error);
+        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 module.exports = {
     createOrder,
     updateOrder,
+    fetchOrderById,
 }

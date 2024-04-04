@@ -154,8 +154,8 @@ async function createGptModel(req, res) {
 }
 async function createGptPlan(req, res) {
     try {
-        const { name, price, token } = req.body;
-        const response = await GptServices.createPlan(name, parseInt(price), parseInt(token));
+        const { name, session, token } = req.body;
+        const response = await GptServices.createPlan(name, parseInt(session), parseInt(token));
         return res.status(StatusCodes.OK).json(SuccessResponse(response));
     } catch (error) {
         console.log(error);
@@ -246,6 +246,7 @@ async function fetchGptCaseQuery(body) {
             },
             body: JSON.stringify(body),
         });
+        
         const parsed = await response.json();
         return parsed;
     } catch (error) {

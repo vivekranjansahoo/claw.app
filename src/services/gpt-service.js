@@ -75,12 +75,12 @@ async function createSession(userId, initialPrompt, modelName) {
     }
 }
 
-async function createPlan(name, price, token) {
+async function createPlan(name, session, token) {
     try {
         const newPlan = await prisma.plan.create({
             data: {
                 name,
-                price,
+                session,
                 token,
             }
         });
@@ -345,6 +345,34 @@ async function fetchLastMessagePair(sessionId) {
     }
 }
 
+async function updateUserPlan(mongoId, newPlan) {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                mongoId
+            },
+            data: {
+                planName: newPlan,
+                tokenUsed: 0,
+            },
+            select: {
+                plan: {
+                    select: {
+                        token: true
+                    }
+                },
+                planName: true,
+                tokenUsed: true,
+            }
+        });
+
+        return { plan: updatedUser.planName, token: { used: updatedUser.tokenUsed, total: updatedUser.plan.token } }
+    } catch (error) {
+        console.error(error);
+        throw new AppError("Error while updating user plan", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createMessage,
     createSession,
@@ -361,4 +389,5 @@ module.exports = {
     fetchReferralDetails,
     consumeToken,
     fetchLastMessagePair,
+    updateUserPlan,
 }

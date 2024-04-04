@@ -3,6 +3,7 @@ const { OrderService, PaymentService } = require("../services");
 const { ErrorResponse, SuccessResponse } = require("../utils/common");
 const { StatusCodes } = require('http-status-codes');
 const { paymentStatus } = require("../utils/common/constants");
+const { GptServices } = require("../services");
 const stripe = require("stripe")(STRIPE_SECRET_KEY);
 
 
@@ -23,9 +24,7 @@ async function createPaymentIntent(req, res) {
         const order = await OrderService.createOrder({ plan, request, session, billingCycle, user: _id });
         // create payment
         const payment = await PaymentService.createPayment({ amount, userId: _id, orderId: order.id, status: paymentStatus.INITIATED, paymentIntentId: paymentIntent.id });
-
-
-        console.log(paymentIntent)
+        
         res.status(StatusCodes.CREATED).json(SuccessResponse({ clientSecret: paymentIntent.client_secret }))
     } catch (error) {
         console.log(error);
@@ -34,16 +33,29 @@ async function createPaymentIntent(req, res) {
 }
 
 
+async function successEvent(paymentIntentId) {
+    try {
+        // update payment
+        const updatedPayment = await PaymentService.updatePaymentByPaymentIntentId(paymentIntentId, { status: paymentStatus.SUCCESS });
+        // fetch order details
+        const placedOrder = await OrderService.fetchOrderById(updatedPayment.orderId);
+        // update the plan for user
+        await GptServices.updateUserPlan(updatedPayment.userId, placedOrder.plan);
+        console.log(updatedUser)
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 async function captureEvent(req, res) {
     try {
         const sig = req.headers['stripe-signature']
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET);
         // Handle the event
-        console.log(event.type)
         switch (event.type) {
             case 'payment_intent.succeeded':
                 const paymentIntent = event.data.object;
-                await PaymentService.updatePaymentByPaymentIntentId(paymentIntent.id, { status: paymentStatus.SUCCESS });
+                await successEvent(paymentIntent.id)
                 console.log(paymentIntent, "succeeded")
                 // Then define and call a method to handle the successful payment intent.
                 // handlePaymentIntentSucceeded(paymentIntent);
