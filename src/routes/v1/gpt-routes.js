@@ -20,6 +20,7 @@ router.get('/case/related/:sessionId', GptController.getRelatedCases);
 router.post('/case/search', GptController.queryCase);
 router.get('/session/:sessionId', GptController.getSessionMessages);
 router.get('/sessions/:model', GptController.getUserSessions);
+router.delete('/sessions/:model', GptController.deleteUserSessions)
 router.post('/user', GptController.initGptUser);
 
 router.post('/createModel', GptController.createGptModel);

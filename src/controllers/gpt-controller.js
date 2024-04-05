@@ -269,6 +269,18 @@ async function queryCase(req, res) {
     }
 }
 
+async function deleteUserSessions(req, res) {
+    try {
+        const { _id } = req.body.client;
+        const { model } = req.params;
+        await GptServices.deleteSessions(_id, model);
+        return res.status(StatusCodes.OK).json(SuccessResponse());
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
+    }
+}
+
 module.exports = {
     startSession,
     getUserSessions,
@@ -285,4 +297,5 @@ module.exports = {
     fetchCaseDetails,
     queryCase,
     getRelatedCases,
+    deleteUserSessions,
 }

@@ -373,6 +373,21 @@ async function updateUserPlan(mongoId, newPlan) {
     }
 }
 
+async function deleteSessions(mongoId, modelName) {
+    try {
+        await prisma.session.deleteMany({
+            where: {
+                userId: mongoId,
+                modelName,
+            }
+        });
+        return;
+    } catch (error) {
+        console.error(error);
+        throw new AppError("Error while deleting user sessions", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports = {
     createMessage,
     createSession,
@@ -390,4 +405,5 @@ module.exports = {
     consumeToken,
     fetchLastMessagePair,
     updateUserPlan,
+    deleteSessions,
 }
