@@ -81,7 +81,7 @@ async function appendMessage(req, res) {
 
     } catch (error) {
         console.log(error);
-        res.status(error.statusCode).json(ErrorResponse({}, error));
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
     }
 }
 
