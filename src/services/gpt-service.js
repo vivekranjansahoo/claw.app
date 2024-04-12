@@ -10,11 +10,12 @@ async function fetchContext(sessionId) {
                 sessionId
             },
             orderBy: {
-                createdAt: "asc"
+                createdAt: "desc"
             },
             select: {
                 text: true
-            }
+            },
+            take: 2,
         });
         let context = ''
         messages.forEach(({ text }) => {
@@ -310,7 +311,7 @@ async function fetchReferralDetails(mongoId) {
                 generatedReferralCode: true
             }
         });
-        if (response.generatedReferralCode) {
+        if (response && response.generatedReferralCode) {
             const redeemCount = await prisma.user.count({ where: { redeemedReferralCodeId: response.generatedReferralCode?.id } });
 
             return { referralCode: response.generatedReferralCode, redeemCount };

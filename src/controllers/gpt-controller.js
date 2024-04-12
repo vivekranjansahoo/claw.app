@@ -246,7 +246,7 @@ async function fetchGptCaseQuery(body) {
             },
             body: JSON.stringify(body),
         });
-        
+
         const parsed = await response.json();
         return parsed;
     } catch (error) {
