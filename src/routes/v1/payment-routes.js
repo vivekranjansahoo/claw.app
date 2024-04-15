@@ -1,15 +1,13 @@
 const express = require('express');
 const { authMiddleware, validateRequestMiddleware } = require('../../middlewares');
-const { StripeController } = require('../../controllers');
+const { CashfreeController } = require('../../controllers');
 const router = express.Router();
 
 router.post(
-    "/create-payment-intent",
+    "/create-payment-order",
     validateRequestMiddleware.validateCreatePaymentRequest,
     authMiddleware.checkClientAuth,
-    StripeController.createPaymentIntent
+    CashfreeController.createOrder
 );
-
-router.post("/webhook", StripeController.captureEvent);
 
 module.exports = router;

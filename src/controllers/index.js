@@ -10,4 +10,5 @@ module.exports = {
     GptController: require('./gpt-controller'),
     CaseFinderController: require('./caseFinder-controller'),
     StripeController: require('./stripe-controller'),
+    CashfreeController: require('./Cashfree-controller'),
 }
