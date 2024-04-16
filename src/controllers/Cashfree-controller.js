@@ -2,13 +2,14 @@ const { CASHFREE_URL, CASHFREE_CLIENT_ID, CASHFREE_CLIENT_SECRET } = require("..
 const { OrderService } = require("../services");
 const { ErrorResponse, SuccessResponse } = require("../utils/common");
 const { StatusCodes } = require('http-status-codes');
+const { paymentStatus } = require("../utils/common/constants");
 
 async function createOrder(req, res) {
     try {
         const { amount, plan, request, session, billingCycle } = req.body;
         const { _id, phoneNumber } = req.body.client;
         // create order
-        const order = await OrderService.createOrder({ plan, request, session, billingCycle, user: _id });
+        const order = await OrderService.createOrder({ plan, request, session, billingCycle, user: _id, paymentStatus: paymentStatus.INITIATED });
         // Create a order with the order amount and currency
         const response = await fetch(`${CASHFREE_URL}/orders`, {
             method: "POST",

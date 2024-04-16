@@ -24,19 +24,9 @@ async function updatePayment(id, data) {
     }
 }
 
-async function updatePaymentByPaymentIntentId(paymentIntentId, data) {
-    try {
-        const updatedPayment = await paymentRepository.updateByPaymentIntentId(paymentIntentId, data);
-        return updatedPayment;
-    } catch (error) {
-        console.log(error);
-        throw new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR);
-    }
-}
 
 
 module.exports = {
     createPayment,
     updatePayment,
-    updatePaymentByPaymentIntentId,
 }

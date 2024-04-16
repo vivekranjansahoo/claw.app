@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { paymentStatus, billingCycles } = require('../utils/common/constants');
 
 const orderSchema = new mongoose.Schema({
     user: {
@@ -6,9 +7,10 @@ const orderSchema = new mongoose.Schema({
         ref: 'Client',
         required: true,
     },
-    payment: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Payment'
+    paymentStatus: {
+        type: String,
+        enum: [paymentStatus.INITIATED, paymentStatus.SUCCESS, paymentStatus.FAILED],
+        required: true,
     },
     plan: {
         type: String,
@@ -25,7 +27,7 @@ const orderSchema = new mongoose.Schema({
     },
     billingCycle: {
         type: String,
-        enum: ['MONTHLY', 'YEARLY', 'LIFETIME'],
+        enum: [billingCycles.MONTHLY, billingCycles.YEARLY, billingCycles.YEARLY],
         required: true,
         trim: true,
     }

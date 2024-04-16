@@ -11,7 +11,7 @@ app.use(express.json({
     verify: function (req, res, buf) {
         const url = req.url;
         console.log(url);
-        if (url === '/api/v1/stripe/webhook') {
+        if (url === '/api/v1/payment/webhook') {
             req.rawBody = buf.toString();
         }
     }
