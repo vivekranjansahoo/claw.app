@@ -31,7 +31,7 @@ async function createOrder(req, res) {
             })
         });
         const { payment_session_id } = await response.json();
-        res.status(StatusCodes.CREATED).json(SuccessResponse({ payment_session_id }));
+        res.status(StatusCodes.CREATED).json(SuccessResponse({ payment_session_id, order_id: order._id.toString() }));
     } catch (error) {
         console.log(error);
         res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse({}, error));
