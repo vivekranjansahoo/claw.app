@@ -210,9 +210,9 @@ async function fetchGptUser(req, res) {
     }
 }
 
-async function fetchGptCases(id) {
+async function fetchGptCases(folderId, caseId) {
     try {
-        const response = await fetch(`${FLASK_API_ENDPOINT}/scrape/case/${id}`, {
+        const response = await fetch(`${FLASK_API_ENDPOINT}/scrape/case/${folderId}/${caseId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -228,8 +228,8 @@ async function fetchGptCases(id) {
 
 async function fetchCaseDetails(req, res) {
     try {
-        const { caseId } = req.params;
-        const data = await fetchGptCases(caseId);
+        const { caseId, folderId } = req.params;
+        const data = await fetchGptCases(folderId, caseId);
         return res.status(StatusCodes.OK).json(SuccessResponse(data));
     } catch (error) {
         console.log(error);

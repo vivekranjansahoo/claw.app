@@ -38,7 +38,7 @@ async function fetchNews(news_type = 0) {
         await Promise.all(db_update);
 
         // delete older news - time threshold - 40 mins
-        const deletedNews = await newsRespository.deleteOlderThan(news_type, moment().subtract(40, 'minutes').toDate());
+        const deletedNews = await newsRespository.deleteOlderThan(news_type, moment().subtract(48, 'hours').toDate());
         console.log(deletedNews, "deletions");
     }
     catch (err) {
