@@ -1,8 +1,7 @@
-const express = require('express');
-const { GptController } = require('../../controllers/index');
-const { authMiddleware } = require('../../middlewares');
+const express = require("express");
+const { GptController } = require("../../controllers/index");
+const { authMiddleware } = require("../../middlewares");
 const router = express.Router();
-
 
 // routes to manage models for prompt generation
 // router.get('/model/:modelId');
@@ -14,25 +13,30 @@ const router = express.Router();
 
 // routes to create/manage sessions
 router.use(authMiddleware.checkClientAuth);
-router.get('/user', GptController.fetchGptUser);
-router.get('/case/:folderId/:caseId', GptController.fetchCaseDetails);
-router.get('/case/related/:sessionId', GptController.getRelatedCases);
-router.post('/case/search', GptController.queryCase);
-router.get('/session/:sessionId', GptController.getSessionMessages);
-router.get('/sessions/:model', GptController.getUserSessions);
-router.delete('/sessions/:model', GptController.deleteUserSessions)
-router.post('/user', GptController.initGptUser);
+router.get("/user", GptController.fetchGptUser);
+router.get("/case/related/:sessionId", GptController.getRelatedCases);
+router.get("/case/:folderId/:caseId", GptController.fetchCaseDetails);
 
-router.post('/createModel', GptController.createGptModel);
-router.post('/createPlan', GptController.createGptPlan);
+router.post("/case/search", GptController.queryCase);
+router.get("/session/:sessionId", GptController.getSessionMessages);
+router.get("/sessions/:model", GptController.getUserSessions);
+router.delete("/sessions/:model", GptController.deleteUserSessions);
+router.post("/user", GptController.initGptUser);
 
-router.get('/referralCode', authMiddleware.checkAmabassador, GptController.fetchAmbassadorDetails);
-router.post('/referralCode/generate', GptController.createReferralCode);
-router.post('/referralCode/redeem', GptController.redeemReferralCode);
+router.post("/createModel", GptController.createGptModel);
+router.post("/createPlan", GptController.createGptPlan);
+
+router.get(
+  "/referralCode",
+  authMiddleware.checkAmabassador,
+  GptController.fetchAmbassadorDetails
+);
+router.post("/referralCode/generate", GptController.createReferralCode);
+router.post("/referralCode/redeem", GptController.redeemReferralCode);
 
 // router.post('/conversation', GptController.generateGptResponse);
-router.post('/session', GptController.startSession);
-router.post('/session/prompt', GptController.appendMessage);
+router.post("/session", GptController.startSession);
+router.post("/session/prompt", GptController.appendMessage);
 
 // router.delete('/session/sessionId');
 
