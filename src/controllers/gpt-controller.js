@@ -345,8 +345,8 @@ async function queryCase(req, res) {
   try {
     const { _id } = req.body.client;
     const {
-      startDate = "01/01/1980",
-      endDate = "01/01/2024",
+      startDate = "18-sep-01",
+      endDate = "19-sep-20",
       query = "",
       courtName = "Supreme Court of India",
     } = req.body;
