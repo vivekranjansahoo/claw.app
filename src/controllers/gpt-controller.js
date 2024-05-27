@@ -144,8 +144,6 @@ async function getRelatedCases(req, res) {
       ""
     );
 
-    console.log("i am in");
-
     const relatedCases = await fetchGptRelatedCases(context);
     return res
       .status(StatusCodes.OK)
@@ -286,16 +284,17 @@ async function fetchGptCases(folderId, caseId) {
   console.log(folderId, caseId);
   try {
     const response = await fetch(
-      `${FLASK_API_ENDPOINT}/scrape/case/${folderId}/${caseId}`,
+      `${FLASK_API_ENDPOINT}/scrape/case/view_document`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ folder_id: folderId, case_id: caseId }),
       }
     );
-    console.log(JSON.stringify(response));
-    const parsed = await JSON.stringify(response);
+
+    const parsed = await response.json();
 
     return parsed;
   } catch (error) {
@@ -309,7 +308,7 @@ async function fetchGptCases(folderId, caseId) {
 
 async function fetchCaseDetails(req, res) {
   try {
-    const { caseId, folderId } = req.params;
+    const { folderId, caseId } = req.params;
     const data = await fetchGptCases(folderId, caseId);
     return res.status(StatusCodes.OK).json(SuccessResponse(data));
   } catch (error) {
