@@ -297,7 +297,6 @@ async function fetchGptCases(folderId, caseId) {
     );
 
     const parsed = await response.json();
-
     return parsed;
   } catch (error) {
     console.log(error);
